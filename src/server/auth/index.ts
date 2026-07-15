@@ -4,6 +4,12 @@ import Credentials from "next-auth/providers/credentials";
 import { eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
+import {
+  getOidcEndpoints,
+  getZitadelIssuer,
+  isZitadelConfigured as isZitadelConfiguredFromEnv,
+} from "@/server/security/config";
+import { logger } from "@/server/security/log";
 
 /**
  * Auth.js v5. Il flusso di autenticazione è delegato a Zitadel (OIDC);
@@ -20,6 +26,15 @@ declare module "next-auth" {
       /** id della tabella `users` (non il sub Zitadel). */
       id: string;
     } & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    /** id interno della tabella `users`. */
+    dbUserId?: string;
+    /** id_token ZITADEL, confinato al JWT server-side (mai nel client). */
+    zitadelIdToken?: string;
   }
 }
 
@@ -74,20 +89,31 @@ async function syncUser(input: {
 
 /** Zitadel è attivo solo se configurato: con env vuote il provider
  * farebbe fallire ogni route di auth alla discovery OIDC. */
-export const isZitadelConfigured = Boolean(
-  process.env.AUTH_ZITADEL_ISSUER &&
-    process.env.AUTH_ZITADEL_ID &&
-    process.env.AUTH_ZITADEL_SECRET
-);
+export const isZitadelConfigured = isZitadelConfiguredFromEnv;
 
 const providers = [];
 
 if (isZitadelConfigured) {
+  const endpoints = getOidcEndpoints();
   providers.push(
     Zitadel({
-      issuer: process.env.AUTH_ZITADEL_ISSUER,
-      clientId: process.env.AUTH_ZITADEL_ID,
-      clientSecret: process.env.AUTH_ZITADEL_SECRET,
+      // Discovery OIDC via issuer; gli endpoint token/userinfo/jwks restano
+      // sull'issuer ZITADEL e sono usati solo server-side.
+      issuer: getZitadelIssuer(),
+      clientId: process.env.AUTH_ZITADEL_ID ?? process.env.ZITADEL_CLIENT_ID,
+      clientSecret:
+        process.env.AUTH_ZITADEL_SECRET ?? process.env.ZITADEL_CLIENT_SECRET,
+      // Authorization Code Flow + PKCE (default del provider). Se è configurata
+      // una Custom Login App, l'utente raggiunge l'authorization endpoint
+      // tramite ZITADEL_LOGIN_BASE_URL (custom login base URL).
+      ...(endpoints.authorization
+        ? {
+            authorization: {
+              url: endpoints.authorization,
+              params: { scope: "openid email profile" },
+            },
+          }
+        : {}),
     })
   );
 }
@@ -127,12 +153,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, account, profile, user }) {
       // Primo login OIDC: sincronizza l'utente su DB e memorizza l'id interno.
       if (account?.provider === "zitadel" && profile) {
-        token.dbUserId = await syncUser({
-          zitadelId: String(profile.sub),
-          email: String(profile.email ?? token.email ?? ""),
-          name: (profile.name as string | null) ?? null,
-          image: (profile.picture as string | null) ?? null,
-        });
+        try {
+          token.dbUserId = await syncUser({
+            zitadelId: String(profile.sub),
+            email: String(profile.email ?? token.email ?? ""),
+            name: (profile.name as string | null) ?? null,
+            image: (profile.picture as string | null) ?? null,
+          });
+        } catch (error) {
+          // Non esporre dettagli sensibili: log redatto lato server.
+          logger.error("Sincronizzazione utente OIDC fallita", error);
+          throw new Error("AccessDenied");
+        }
+        // id_token conservato SOLO nel JWT cifrato (cookie httpOnly), mai
+        // esposto nella sessione inviata al client. Serve come id_token_hint
+        // opzionale per il logout federato.
+        if (account.id_token) token.zitadelIdToken = account.id_token;
       }
       if (account?.provider === "dev-login" && user?.id) {
         token.dbUserId = user.id;
@@ -140,6 +176,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     session({ session, token }) {
+      // Esponiamo al client solo l'id utente interno: nessun access/id token.
       if (token.dbUserId) session.user.id = token.dbUserId as string;
       return session;
     },

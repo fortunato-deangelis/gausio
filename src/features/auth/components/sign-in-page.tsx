@@ -17,6 +17,7 @@ import {
   Separator,
 } from "@/components/shared";
 import { auth, isZitadelConfigured, signIn } from "@/server/auth";
+import { sanitizeRedirect } from "@/server/security/redirect";
 import { AuthCopyright } from "./auth-shell";
 import { AuthModeToggle, type AuthMode } from "./auth-mode-toggle";
 
@@ -42,7 +43,8 @@ const MODE_COPY: Record<AuthMode, { title: string; description: string }> = {
 };
 
 function safeCallbackUrl(callbackUrl: string | undefined): string {
-  return callbackUrl?.startsWith("/") ? callbackUrl : "/app";
+  // Allowlist + blocco open redirect (gestisce anche "//host" e "/\\host").
+  return sanitizeRedirect(callbackUrl, { fallback: "/app" });
 }
 
 function safeMode(mode: string | undefined): AuthMode {
