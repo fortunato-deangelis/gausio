@@ -79,8 +79,8 @@ export default function AccessibilityPage() {
         Se riscontri barriere di accessibilità o desideri segnalare un
         problema, scrivici tramite la pagina{" "}
         <Link href="/contatti">Contatti</Link> o all&apos;indirizzo{" "}
-        <a href="mailto:accessibilita@gausio.example">
-          accessibilita@gausio.example
+        <a href="mailto:accessibilita@gausio.com">
+          accessibilita@gausio.com
         </a>
         . Ci impegniamo a rispondere entro 30 giorni.
       </p>

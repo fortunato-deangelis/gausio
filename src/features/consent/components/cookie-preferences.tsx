@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/shared/toast";
 import { AppCard, Button, Label, Switch } from "@/components/shared";
 import {
   COOKIE_CATEGORIES,
@@ -19,7 +19,7 @@ import { formatDateTime } from "@/lib/format";
 type DraftConsent = Omit<CookieConsentPreferences, "necessary">;
 
 /**
- * Pannello inline di gestione del consenso per la pagina /preferenze-cookie:
+ * Pannello inline di gestione del consenso per la pagina /preferenza-cookie:
  * mostra lo stato corrente e permette di aggiornarlo senza banner.
  */
 export function CookiePreferences() {
@@ -47,11 +47,15 @@ export function CookiePreferences() {
 
   return (
     <AppCard
-      title="Le tue preferenze sui cookie"
+      className="rounded-[2px] bg-white"
+      contentClassName="text-base"
+      title={<span className="text-xl">Le tue preferenze sui cookie</span>}
       description={
-        stored
-          ? `Ultimo aggiornamento del consenso: ${formatDateTime(stored.updatedAt)}.`
-          : "Non hai ancora espresso una scelta: valgono solo i cookie necessari."
+        <span className="text-base leading-7">
+          {stored
+            ? `Ultimo aggiornamento del consenso: ${formatDateTime(stored.updatedAt)}.`
+            : "Non hai ancora espresso una scelta: valgono solo i cookie necessari."}
+        </span>
       }
     >
       <div className="flex flex-col gap-6">
@@ -59,19 +63,20 @@ export function CookiePreferences() {
           {COOKIE_CATEGORIES.map((category) => (
             <div
               key={category.key}
-              className="flex items-start justify-between gap-4 rounded-lg border p-4"
+              className="flex items-start justify-between gap-4 rounded-[2px] border p-4 sm:p-5"
             >
               <Label
                 htmlFor={`pref-cookie-${category.key}`}
-                className="flex flex-col items-start gap-1 font-normal"
+                className="flex flex-col items-start gap-1 text-base font-normal"
               >
                 <span className="font-semibold">{category.title}</span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-base leading-7 text-muted-foreground">
                   {category.description}
                 </span>
               </Label>
               <Switch
                 id={`pref-cookie-${category.key}`}
+                shape="rectangular"
                 checked={
                   category.required
                     ? true
@@ -89,15 +94,19 @@ export function CookiePreferences() {
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => save(current)}>Salva preferenze</Button>
+          <Button size="base" onClick={() => save(current)}>
+            Salva preferenze
+          </Button>
           <Button
             variant="outline"
+            size="base"
             onClick={() => save({ preferences: true, analytics: true })}
           >
             Accetta tutti
           </Button>
           <Button
             variant="outline"
+            size="base"
             onClick={() => save({ preferences: false, analytics: false })}
           >
             Rifiuta opzionali

@@ -154,7 +154,7 @@ export default function TermsPage() {
       <h2>11. Contatti</h2>
       <p>
         Per qualsiasi domanda sui presenti Termini:{" "}
-        <a href="mailto:legal@gausio.example">legal@gausio.example</a> o la
+        <a href="mailto:legal@gausio.com">legal@gausio.com</a> o la
         pagina <Link href="/contatti">Contatti</Link>.
       </p>
     </LegalArticle>

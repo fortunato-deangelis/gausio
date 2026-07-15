@@ -13,7 +13,7 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     label: "Email",
-    value: "info@gausio.example",
+    value: "info@gausio.com",
   },
   {
     icon: Phone,
@@ -34,7 +34,7 @@ const CONTACT_INFO = [
 
 export default function ContattiPage() {
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-12">
+    <div className="mx-auto w-full max-w-360 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-3xl font-bold tracking-tight">Parliamone</h1>
         <p className="mt-3 text-muted-foreground">

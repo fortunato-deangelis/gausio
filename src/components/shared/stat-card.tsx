@@ -35,8 +35,8 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <Card className={cn("py-5", className)}>
-      <CardContent className="flex items-start justify-between gap-3 px-5">
+    <Card className={className}>
+      <CardContent className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <span className="text-sm text-muted-foreground">{label}</span>
           <span className="text-2xl font-semibold tracking-tight">{value}</span>

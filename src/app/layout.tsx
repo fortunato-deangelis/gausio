@@ -42,7 +42,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         <ThemeProvider>
           <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
-          <Toaster richColors position="top-right" />
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

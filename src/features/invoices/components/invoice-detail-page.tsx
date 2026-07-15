@@ -221,7 +221,7 @@ export async function InvoiceDetailPage({
         </AppCard>
       </div>
 
-      <AppCard title="Righe" contentClassName="px-0">
+      <AppCard title="Righe">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

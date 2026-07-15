@@ -24,7 +24,7 @@ export default function PrivacyPolicyPage() {
         Il titolare del trattamento è <strong>Gausio S.r.l.</strong>, con sede
         legale in Via dell&apos;Innovazione 42, 00100 Roma (RM), P.IVA
         01234567890, contattabile all&apos;indirizzo email{" "}
-        <a href="mailto:privacy@gausio.example">privacy@gausio.example</a> o
+        <a href="mailto:privacy@gausio.com">privacy@gausio.com</a> o
         tramite la pagina <Link href="/contatti">Contatti</Link>.
       </p>
 
@@ -76,7 +76,7 @@ export default function PrivacyPolicyPage() {
           <strong>Statistiche di utilizzo</strong> tramite cookie opzionali —
           base giuridica: consenso (art. 6.1.a GDPR), revocabile in ogni
           momento dalla pagina{" "}
-          <Link href="/preferenze-cookie">Preferenze cookie</Link>.
+          <Link href="/preferenza-cookie">Preferenze cookie</Link>.
         </li>
       </ul>
 
@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
       </p>
       <p>
         Le richieste possono essere inviate a{" "}
-        <a href="mailto:privacy@gausio.example">privacy@gausio.example</a>.
+        <a href="mailto:privacy@gausio.com">privacy@gausio.com</a>.
         Resta salvo il diritto di proporre reclamo al Garante per la
         protezione dei dati personali (
         <a
@@ -139,7 +139,7 @@ export default function PrivacyPolicyPage() {
       <p>
         Per le informazioni sull&apos;uso dei cookie si rinvia alla{" "}
         <Link href="/cookie-policy">Cookie Policy</Link> e alla pagina{" "}
-        <Link href="/preferenze-cookie">Preferenze cookie</Link>.
+        <Link href="/preferenza-cookie">Preferenze cookie</Link>.
       </p>
 
       <h2>9. Modifiche alla presente informativa</h2>

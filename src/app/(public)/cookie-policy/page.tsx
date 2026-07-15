@@ -110,7 +110,7 @@ export default function CookiePolicyPage() {
         tutti i cookie, rifiutare quelli opzionali o gestire le preferenze per
         singola categoria. Le scelte possono essere modificate in qualsiasi
         momento dalla pagina{" "}
-        <Link href="/preferenze-cookie">Preferenze cookie</Link> o tramite il
+        <Link href="/preferenza-cookie">Preferenze cookie</Link> o tramite il
         collegamento &quot;Preferenze cookie&quot; nel footer del sito.
       </p>
 
@@ -125,7 +125,7 @@ export default function CookiePolicyPage() {
       <h2>5. Titolare del trattamento</h2>
       <p>
         Gausio S.r.l., Via dell&apos;Innovazione 42, 00100 Roma —{" "}
-        <a href="mailto:privacy@gausio.example">privacy@gausio.example</a>. Per
+        <a href="mailto:privacy@gausio.com">privacy@gausio.com</a>. Per
         ogni altra informazione si rinvia alla{" "}
         <Link href="/privacy-policy">Privacy Policy</Link>.
       </p>

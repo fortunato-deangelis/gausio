@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Building2, Check, ChevronsUpDown, Plus, Zap } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/shared/toast";
 import {
   Sidebar,
   SidebarContent,

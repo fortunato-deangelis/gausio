@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Eye, MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/shared/toast";
 import {
   AppDropdown,
   Button,

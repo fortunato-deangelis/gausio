@@ -10,6 +10,14 @@ Gestionale aziendale multi-tenant (workspace = azienda). Next.js 16 (App Router,
 monolitico: frontend + backend), Tailwind v4, shadcn/ui, Drizzle ORM + Postgres,
 Auth.js v5 + Zitadel. UI in italiano, identificatori di codice in inglese.
 
+## Guardrail UI obbligatorio
+
+Prima di modificare landing, pagine pubbliche, navbar, footer, tema o primitivi
+condivisi (`Card`, `Button`, `Switch`, toast e brand), leggere integralmente
+`docs/guardrails/ui-and-marketing.md`. Il documento è normativo: se una nuova
+richiesta cambia una regola, aggiornare nello stesso intervento sia il codice
+sia il guardrail.
+
 ## Architettura feature-first
 
 ```
@@ -68,7 +76,8 @@ export async function createX(input: XInput): Promise<ActionResult<{ id: string 
 ```
 
 `ActionResult`, `ok`, `fail` da `@/lib/action-result`. Validazione zod in
-`features/<f>/schema.ts`. Toast con `toast` di `sonner` lato client.
+`features/<f>/schema.ts`. Toast con `toast` da `@/components/shared/toast` lato
+client; non importare direttamente `toast` da `sonner` nelle feature.
 
 - Le colonne Drizzle `numeric` sono stringhe TS: formattare con
   `formatCurrency/formatNumber/formatDate` da `@/lib/format`.
@@ -80,7 +89,9 @@ export async function createX(input: XInput): Promise<ActionResult<{ id: string 
 
 Pubbliche (group `(public)`, layout con navbar/footer/cookie banner):
 `/` landing, `/contatti`, `/privacy-policy`, `/cookie-policy`,
-`/termini-e-condizioni`, `/dichiarazione-di-accessibilita`, `/preferenze-cookie`.
+`/termini-e-condizioni`, `/dichiarazione-di-accessibilita`,
+`/preferenza-cookie`. La vecchia `/preferenze-cookie` reindirizza alla rotta
+canonica singolare.
 
 Auth: `/sign-in`, `/onboarding`, `/invito/[token]`.
 

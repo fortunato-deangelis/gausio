@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Download, Paperclip, Trash2, Upload } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/shared/toast";
 import {
   AppCard,
   Button,

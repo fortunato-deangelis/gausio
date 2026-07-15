@@ -175,7 +175,7 @@ export async function OrderDetailPage({
         </AppCard>
       </div>
 
-      <AppCard title="Righe" contentClassName="px-0">
+      <AppCard title="Righe">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

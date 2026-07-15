@@ -164,7 +164,7 @@ export default async function Page({
         />
       </AppCard>
 
-      <AppCard title="Righe merce" contentClassName="px-0">
+      <AppCard title="Righe merce">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

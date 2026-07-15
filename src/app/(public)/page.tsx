@@ -40,7 +40,7 @@ export default function LandingPage() {
   return (
     <>
       <section className="overflow-hidden bg-white px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32 lg:pt-36">
-        <div className="mx-auto w-full max-w-[1200px] text-center">
+        <div className="mx-auto w-full max-w-360 text-center">
           <p className="text-lg font-semibold text-primary sm:text-xl">Gausio</p>
           <h1 className="mx-auto mt-4 max-w-5xl text-5xl font-bold leading-[0.95] tracking-[-0.055em] text-balance sm:text-7xl lg:text-8xl">
             La tua azienda.
@@ -63,7 +63,7 @@ export default function LandingPage() {
         id="funzionalita"
         className="scroll-mt-20 bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32"
       >
-        <div className="mx-auto w-full max-w-[1200px]">
+        <div className="mx-auto w-full max-w-360">
           <h2 className="text-4xl font-bold tracking-[-0.04em] sm:text-6xl">
             Prima di tutto, cosa cambia.
           </h2>
@@ -132,7 +132,7 @@ export default function LandingPage() {
       </section>
 
       <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
-        <div className="mx-auto w-full max-w-[1200px]">
+        <div className="mx-auto w-full max-w-360">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-lg font-semibold text-primary sm:text-xl">
               Fatto per restare in controllo.
@@ -157,7 +157,7 @@ export default function LandingPage() {
       </section>
 
       <section className="bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32">
-        <div className="mx-auto w-full max-w-[1200px]">
+        <div className="mx-auto w-full max-w-360">
           <div className="max-w-4xl">
             <p className="text-lg font-semibold text-primary sm:text-xl">
               Meno attrito. Più avanzamento.
@@ -212,7 +212,7 @@ export default function LandingPage() {
       </section>
 
       <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
-        <div className="mx-auto grid w-full max-w-[1200px] gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:gap-20">
+        <div className="mx-auto grid w-full max-w-360 gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:gap-20">
           <div>
             <p className="text-lg font-semibold text-primary sm:text-xl">
               Il team cambia. Il metodo resta.
@@ -240,7 +240,7 @@ export default function LandingPage() {
         id="prezzi"
         className="scroll-mt-20 bg-[#f5f5f7] px-5 py-6 sm:px-8 sm:py-8"
       >
-        <div className="mx-auto w-full max-w-[1200px] overflow-hidden rounded-[2px] bg-[#111111] px-7 py-16 text-white sm:px-12 sm:py-24">
+        <div className="mx-auto w-full max-w-360 overflow-hidden rounded-[2px] bg-[#111111] px-7 py-16 text-white sm:px-12 sm:py-24">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-lg font-semibold text-primary sm:text-xl">
               Più valore. Meno costi invisibili.
@@ -266,7 +266,7 @@ export default function LandingPage() {
         id="faq"
         className="scroll-mt-20 bg-white px-5 py-24 sm:px-8 sm:py-36"
       >
-        <div className="mx-auto grid w-full max-w-[1200px] gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+        <div className="mx-auto grid w-full max-w-360 gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
           <div>
             <p className="text-lg font-semibold text-primary sm:text-xl">
               Domande frequenti
@@ -282,7 +282,10 @@ export default function LandingPage() {
                 value={"faq-" + index}
                 className="border-black/12"
               >
-                <AccordionTrigger className="py-7 text-left text-xl font-semibold sm:text-2xl">
+                <AccordionTrigger
+                  className="py-7 text-left text-xl font-semibold sm:text-2xl"
+                  iconClassName="size-[30px]"
+                >
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="max-w-3xl pb-7 text-lg leading-relaxed text-muted-foreground">

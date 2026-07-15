@@ -124,7 +124,7 @@ export default async function Page({
         </AppCard>
       </div>
 
-      <AppCard title="Ultimi movimenti" contentClassName="px-0">
+      <AppCard title="Ultimi movimenti">
         {movements.length === 0 ? (
           <p className="px-6 py-4 text-sm text-muted-foreground">
             Nessun movimento registrato per questo articolo.

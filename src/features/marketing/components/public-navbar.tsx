@@ -104,11 +104,11 @@ export function PublicNavbar() {
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
+                size="icon-lg"
                 className="md:hidden"
                 aria-label="Apri il menu"
               >
-                <Menu className="size-5" />
+                <Menu className="h-6! w-6!" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80">

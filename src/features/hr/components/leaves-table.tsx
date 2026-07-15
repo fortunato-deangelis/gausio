@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { ColumnDef } from "@tanstack/react-table";
 import { CalendarOff, Check, Pencil, Trash2, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/components/shared/toast";
 import {
   Button,
   ConfirmDialog,
