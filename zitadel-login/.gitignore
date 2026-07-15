@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+next-env.d.ts
+
+# The vendored upstream is materialized on demand via `npm run upstream:vendor`
+# (git subtree). It is intentionally NOT committed from this scaffold so the
+# repo stays lean; vendor it in your fork when you are ready to build the real
+# login flows. Remove this line if your team prefers to commit the subtree.
+vendor/

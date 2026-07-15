@@ -1,0 +1,28 @@
+{
+  "name": "@gausio/zitadel-login",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sibling scaffold that tracks the upstream ZITADEL Login UI v2 (github.com/zitadel/typescript). See README.md and UPSTREAM.md for the vendoring workflow.",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test \"lib/**/__tests__/*.test.ts\"",
+    "upstream:check": "node scripts/upstream.mjs check",
+    "upstream:vendor": "node scripts/upstream.mjs vendor",
+    "upstream:diff": "node scripts/upstream.mjs diff"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.2"
+  }
+}

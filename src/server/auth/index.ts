@@ -29,7 +29,9 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+// In Auth.js v5 il tipo JWT vive in `@auth/core/jwt` (ri-esportato da
+// `next-auth/jwt`). Aumentiamo direttamente il modulo core.
+declare module "@auth/core/jwt" {
   interface JWT {
     /** id interno della tabella `users`. */
     dbUserId?: string;

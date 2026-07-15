@@ -104,5 +104,30 @@ src/
 | `npm run dev` | Sviluppo (Turbopack) |
 | `npm run build` / `npm start` | Build e avvio produzione |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | Controllo tipi (`tsc --noEmit`) |
+| `npm test` | Unit test (utility di sicurezza) |
 | `npx drizzle-kit generate` | Genera una migrazione dallo schema |
 | `npx drizzle-kit migrate` | Applica le migrazioni |
+
+## Autenticazione & Login App
+
+L'autenticazione usa **ZITADEL via OIDC** (Authorization Code + PKCE) attraverso
+**Auth.js v5**. È presente una **Login App** sibling in
+[`zitadel-login/`](./zitadel-login) che traccia la upstream **ZITADEL Login UI
+v2** e può servire i flussi di login dietro una *custom login base URL*
+(`ZITADEL_LOGIN_BASE_URL`).
+
+### Documentazione
+
+| Documento | Contenuto |
+| --- | --- |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Topologia dei due app + ZITADEL, decisioni |
+| [docs/APP_LOGIN_COMMUNICATION.md](./docs/APP_LOGIN_COMMUNICATION.md) | Flussi login/logout (diagrammi Mermaid) |
+| [docs/SECURITY.md](./docs/SECURITY.md) | Sessioni, anti open-redirect, redazione log, header |
+| [docs/ZITADEL_CONFIGURATION.md](./docs/ZITADEL_CONFIGURATION.md) | Configurazione dell'istanza ZITADEL |
+| [docs/ENVIRONMENT_VARIABLES.md](./docs/ENVIRONMENT_VARIABLES.md) | Tutte le variabili d'ambiente |
+| [docs/LOCAL_DEVELOPMENT.md](./docs/LOCAL_DEVELOPMENT.md) | Sviluppo locale (Main App + Login App) |
+| [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) | Deploy indipendente dei due app |
+| [docs/OPERATIONS_RUNBOOK.md](./docs/OPERATIONS_RUNBOOK.md) | Health endpoint e troubleshooting |
+| [docs/TEST_PLAN.md](./docs/TEST_PLAN.md) | Test automatici e manuali |
+| [zitadel-login/UPSTREAM.md](./zitadel-login/UPSTREAM.md) | Tracking della upstream Login UI v2 |

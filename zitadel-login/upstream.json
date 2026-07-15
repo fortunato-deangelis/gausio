@@ -1,0 +1,11 @@
+{
+  "$schema": "./upstream.schema.json",
+  "repo": "https://github.com/zitadel/typescript.git",
+  "ref": "main",
+  "subdir": ".",
+  "vendorDir": "vendor",
+  "license": "MIT",
+  "notes": "Upstream ZITADEL Login UI v2 is a single Next.js app at the repository root (package name @zitadel/login, base path /ui/v2/login, pnpm workspace). Pin `ref` to a tag or commit SHA before vendoring for reproducibility. Run `npm run upstream:vendor` to materialize into vendorDir.",
+  "pinnedCommit": null,
+  "lastVendoredAt": null
+}
