@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Hexagon, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { BrandLogo } from "@/components/shared";
 import { OpenBannerButton } from "@/features/consent/components/open-banner-button";
 
 const PRODUCT_LINKS = [
@@ -26,12 +27,7 @@ export function PublicFooter() {
     <footer className="border-t bg-card">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-3">
-          <p className="flex items-center gap-2 text-lg font-bold tracking-tight">
-            <Hexagon aria-hidden className="size-6 fill-primary/20 text-primary" />
-            <span>
-              Gau<span className="text-primary">sio</span>
-            </span>
-          </p>
+          <BrandLogo />
           <p className="text-sm text-muted-foreground">
             Il gestionale all-in-one per clienti, ordini, fatture, magazzino,
             commesse, personale e qualità ISO.

@@ -3,13 +3,14 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ReactNode } from "react";
 
-/** Tema chiaro/scuro via next-themes (classe `dark` sull'html). */
+/** Tema temporaneamente bloccato su light in attesa della revisione del dark. */
 export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
+      forcedTheme="light"
+      enableSystem={false}
       disableTransitionOnChange
     >
       {children}

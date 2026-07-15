@@ -8,6 +8,7 @@ export * from "./primitives";
 export * from "./app-card";
 export * from "./app-dialog";
 export * from "./app-dropdown";
+export * from "./brand-logo";
 export * from "./confirm-dialog";
 export * from "./data-table";
 export * from "./detail-list";

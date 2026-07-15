@@ -29,7 +29,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { NAV_GROUPS } from "@/lib/navigation";
 import { signOutAction } from "./actions";
 import type { ShellContext } from "./types";
@@ -125,7 +124,6 @@ export function AppTopbar({ ctx }: Readonly<{ ctx: ShellContext }>) {
             className="w-48 pl-8 lg:w-64"
           />
         </div>
-        <ThemeToggle />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Notifiche">

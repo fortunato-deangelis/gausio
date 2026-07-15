@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/server/auth";
 import { getWorkspaceContext } from "@/server/workspace";
 import { OnboardingWizard } from "@/features/workspaces/components/onboarding-wizard";
+import { BrandLogo } from "@/components/shared";
 
 export const metadata = { title: "Onboarding" };
 
@@ -15,7 +16,7 @@ export default async function OnboardingPage() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background px-4 py-10">
       <div className="flex flex-col items-center gap-2 text-center">
-        <p className="text-2xl font-bold tracking-tight text-primary">Gausio</p>
+        <BrandLogo imageClassName="size-14" />
         <h1 className="text-2xl font-semibold tracking-tight">
           {ctx ? "Crea un nuovo workspace" : "Benvenuto! Configura la tua azienda"}
         </h1>

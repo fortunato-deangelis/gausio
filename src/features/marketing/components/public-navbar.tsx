@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Hexagon, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 import {
+  BrandLogo,
   Button,
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  ThemeToggle,
   buttonVariants,
 } from "@/components/shared";
 import { cn } from "@/lib/utils";
@@ -19,44 +20,66 @@ const NAV_LINKS = [
   { label: "Funzionalità", href: "/#funzionalita" },
   { label: "Prezzi", href: "/#prezzi" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Contatti", href: "/contatti" },
 ] as const;
-
-export function BrandLogo({ className }: Readonly<{ className?: string }>) {
-  return (
-    <Link
-      href="/"
-      className={cn(
-        "flex items-center gap-2 text-lg font-bold tracking-tight",
-        className
-      )}
-    >
-      <Hexagon aria-hidden className="size-6 fill-primary/20 text-primary" />
-      <span>
-        Gau<span className="text-primary">sio</span>
-      </span>
-    </Link>
-  );
-}
 
 /** Navbar pubblica sticky in stile Vuexy, con menu mobile a Sheet. */
 export function PublicNavbar() {
   const [open, setOpen] = useState(false);
+  const [hash, setHash] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, [pathname]);
+
+  useEffect(() => {
+    const syncScroll = () => setIsScrolled(window.scrollY > 0);
+
+    syncScroll();
+    window.addEventListener("scroll", syncScroll, { passive: true });
+    return () => window.removeEventListener("scroll", syncScroll);
+  }, []);
+
+  const isActive = (href: (typeof NAV_LINKS)[number]["href"]) => {
+    const [linkPathname, linkHash = ""] = href.split("#");
+    return pathname === linkPathname && hash === (linkHash ? `#${linkHash}` : "");
+  };
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4">
-        <BrandLogo />
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b transition-colors",
+        isScrolled
+          ? "bg-background"
+          : "bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60"
+      )}
+    >
+      <div className="mx-auto flex h-20 max-h-20 w-full max-w-360 items-center gap-4 px-4 sm:px-6 md:gap-10 lg:px-8">
+        <BrandLogo
+          showLabel
+          imageClassName="size-12 bg-primary"
+        />
 
-        <nav aria-label="Navigazione principale" className="hidden md:block">
-          <ul className="flex items-center gap-1">
+        <nav
+          aria-label="Navigazione principale"
+          className="hidden flex-1 md:block"
+        >
+          <ul className="flex items-center gap-5">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
+                  aria-current={isActive(link.href) ? "page" : undefined}
                   className={cn(
-                    buttonVariants({ variant: "ghost", size: "sm" }),
-                    "text-sm font-medium text-muted-foreground hover:text-foreground"
+                    "inline-flex h-12 items-center border-b-2 px-1 text-lg font-medium transition-colors",
+                    isActive(link.href)
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:border-foreground hover:text-foreground"
                   )}
                 >
                   {link.label}
@@ -66,19 +89,15 @@ export function PublicNavbar() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-1.5">
-          <ThemeToggle />
+        <div className="ml-auto flex shrink-0 items-center gap-1.5">
           <Link
-            href="/sign-in"
+            href="/contatti"
             className={cn(
-              buttonVariants({ variant: "outline" }),
-              "hidden sm:inline-flex"
+              buttonVariants({ size: "lg" }),
+              "hidden md:inline-flex"
             )}
           >
-            Accedi
-          </Link>
-          <Link href="/sign-in" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
-            Inizia gratis
+            Richiedi una demo
           </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -92,18 +111,27 @@ export function PublicNavbar() {
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-80">
               <SheetHeader>
-                <SheetTitle>Menu</SheetTitle>
+                <SheetTitle className="text-left">
+                  <BrandLogo showLabel imageClassName="size-12 bg-primary" />
+                  <span className="sr-only">Menu</span>
+                </SheetTitle>
               </SheetHeader>
               <nav aria-label="Navigazione mobile" className="px-4">
-                <ul className="flex flex-col gap-1">
+                <ul className="flex flex-col gap-2">
                   {NAV_LINKS.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
                         onClick={() => setOpen(false)}
-                        className="block rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                        aria-current={isActive(link.href) ? "page" : undefined}
+                        className={cn(
+                          "inline-flex h-12 items-center border-b-2 px-1 text-lg font-medium transition-colors",
+                          isActive(link.href)
+                            ? "border-primary text-foreground"
+                            : "border-transparent text-muted-foreground hover:border-foreground hover:text-foreground"
+                        )}
                       >
                         {link.label}
                       </Link>
@@ -113,18 +141,11 @@ export function PublicNavbar() {
               </nav>
               <div className="mt-auto flex flex-col gap-2 p-4">
                 <Link
-                  href="/sign-in"
+                  href="/contatti"
                   onClick={() => setOpen(false)}
-                  className={buttonVariants({ variant: "outline" })}
+                  className={buttonVariants({ size: "lg" })}
                 >
-                  Accedi
-                </Link>
-                <Link
-                  href="/sign-in"
-                  onClick={() => setOpen(false)}
-                  className={buttonVariants()}
-                >
-                  Inizia gratis
+                  Richiedi una demo
                 </Link>
               </div>
             </SheetContent>
