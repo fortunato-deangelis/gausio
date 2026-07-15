@@ -69,6 +69,12 @@ l'app senza un'istanza Zitadel. **Non abilitarlo in produzione.**
 2. Redirect URI: `https://<host>/api/auth/callback/zitadel`
    (in dev: `http://localhost:3000/api/auth/callback/zitadel`).
 3. Copia issuer, client id e client secret nelle env.
+4. Nelle impostazioni del comportamento di login abilita la registrazione
+   self-service; per il recupero password lascia attiva l'opzione dedicata.
+
+La pagina `/sign-in` apre la registrazione ospitata con il parametro OIDC
+`prompt=create`. Il recupero password continua invece nel flusso self-service
+di Zitadel, così l'applicazione non gestisce direttamente le credenziali.
 
 ## Architettura
 

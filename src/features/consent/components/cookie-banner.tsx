@@ -98,7 +98,7 @@ export function CookieBanner() {
       {visible && (
         <section
           aria-label="Consenso all'uso dei cookie"
-          className="fixed inset-x-4 bottom-4 z-50 flex max-h-[85dvh] flex-col gap-4 overflow-y-auto rounded-xl border bg-card p-6 text-card-foreground shadow-lg sm:left-auto sm:right-6 sm:max-w-md"
+          className="fixed inset-x-4 bottom-4 z-50 flex max-h-[85dvh] flex-col gap-4 overflow-y-auto rounded-[2px] border bg-card p-6 text-card-foreground shadow-lg sm:left-auto sm:right-6 sm:max-w-md"
         >
           <h2
             ref={headingRef}
@@ -123,7 +123,7 @@ export function CookieBanner() {
           </p>
 
           {manage && (
-            <fieldset className="flex flex-col gap-4 rounded-lg border p-4">
+            <fieldset className="flex flex-col gap-4 rounded-[2px] border p-4">
               <legend className="px-1 text-sm font-semibold">
                 Gestisci preferenze
               </legend>
@@ -131,6 +131,7 @@ export function CookieBanner() {
                 <div key={category.key} className="flex items-start gap-3">
                   <Switch
                     id={`cookie-cat-${category.key}`}
+                    shape="rectangular"
                     checked={
                       category.required
                         ? true
@@ -162,9 +163,12 @@ export function CookieBanner() {
           <div className="flex flex-wrap gap-2">
             {manage ? (
               <>
-                <Button onClick={() => persist(draft)}>Salva preferenze</Button>
+                <Button size="base" onClick={() => persist(draft)}>
+                  Salva preferenze
+                </Button>
                 <Button
                   variant="outline"
+                  size="base"
                   onClick={() => persist({ preferences: false, analytics: false })}
                 >
                   Rifiuta opzionali
@@ -173,18 +177,21 @@ export function CookieBanner() {
             ) : (
               <>
                 <Button
+                  size="base"
                   onClick={() => persist({ preferences: true, analytics: true })}
                 >
                   Accetta tutti
                 </Button>
                 <Button
                   variant="outline"
+                  size="base"
                   onClick={() => persist({ preferences: false, analytics: false })}
                 >
                   Rifiuta opzionali
                 </Button>
                 <Button
                   variant="ghost"
+                  size="base"
                   onClick={() => {
                     setDraft({
                       preferences: stored?.preferences ?? false,

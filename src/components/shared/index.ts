@@ -16,6 +16,7 @@ export * from "./empty-state";
 export * from "./entity-select";
 export * from "./export-menu";
 export * from "./form-fields";
+export * from "./legal-consent";
 export * from "./page-header";
 export * from "./stat-card";
 export * from "./status-badge";

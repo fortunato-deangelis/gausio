@@ -18,6 +18,9 @@ export const onboardingSchema = z.object({
   companySize: z.string().min(1, "Seleziona la dimensione."),
   goal: z.string().min(1, "Seleziona l'obiettivo principale."),
   discoveryChannel: z.string().optional(),
+  termsAccepted: z
+    .boolean()
+    .refine((accepted) => accepted, "Accetta i termini e la privacy policy per proseguire."),
 });
 
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
@@ -34,6 +37,7 @@ export const updateWorkspaceSchema = onboardingSchema.omit({
   companySize: true,
   goal: true,
   discoveryChannel: true,
+  termsAccepted: true,
 });
 
 export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>;

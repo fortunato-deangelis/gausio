@@ -33,8 +33,10 @@ import {
 type BaseFieldProps<T extends FieldValues> = Readonly<{
   control: Control<T>;
   name: FieldPath<T>;
-  label: string;
+  label?: string;
+  ariaLabel?: string;
   description?: string;
+  helper?: string;
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
@@ -44,7 +46,9 @@ export function TextField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
+  helper,
   placeholder,
   disabled,
   required,
@@ -56,10 +60,13 @@ export function TextField<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid || undefined}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <span aria-hidden> *</span>}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <span aria-hidden> *</span>}
+            </FieldLabel>
+          )}
+          {description && <FieldDescription>{description}</FieldDescription>}
           <Input
             {...field}
             id={field.name}
@@ -68,8 +75,9 @@ export function TextField<T extends FieldValues>({
             disabled={disabled}
             value={field.value ?? ""}
             aria-invalid={fieldState.invalid}
+            aria-label={!label ? ariaLabel ?? placeholder ?? field.name : undefined}
           />
-          {description && <FieldDescription>{description}</FieldDescription>}
+          {helper && <FieldDescription>{helper}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
           )}
@@ -83,7 +91,9 @@ export function NumberField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
+  helper,
   placeholder,
   disabled,
   required,
@@ -96,10 +106,13 @@ export function NumberField<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid || undefined}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <span aria-hidden> *</span>}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <span aria-hidden> *</span>}
+            </FieldLabel>
+          )}
+          {description && <FieldDescription>{description}</FieldDescription>}
           <Input
             {...field}
             id={field.name}
@@ -111,8 +124,9 @@ export function NumberField<T extends FieldValues>({
             disabled={disabled}
             value={field.value ?? ""}
             aria-invalid={fieldState.invalid}
+            aria-label={!label ? ariaLabel ?? placeholder ?? field.name : undefined}
           />
-          {description && <FieldDescription>{description}</FieldDescription>}
+          {helper && <FieldDescription>{helper}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
           )}
@@ -134,7 +148,9 @@ export function TextareaField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
+  helper,
   placeholder,
   disabled,
   required,
@@ -146,10 +162,13 @@ export function TextareaField<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid || undefined}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <span aria-hidden> *</span>}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <span aria-hidden> *</span>}
+            </FieldLabel>
+          )}
+          {description && <FieldDescription>{description}</FieldDescription>}
           <Textarea
             {...field}
             id={field.name}
@@ -158,8 +177,9 @@ export function TextareaField<T extends FieldValues>({
             disabled={disabled}
             value={field.value ?? ""}
             aria-invalid={fieldState.invalid}
+            aria-label={!label ? ariaLabel ?? placeholder ?? field.name : undefined}
           />
-          {description && <FieldDescription>{description}</FieldDescription>}
+          {helper && <FieldDescription>{helper}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
           )}
@@ -175,7 +195,9 @@ export function SelectField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
+  helper,
   placeholder = "Seleziona…",
   disabled,
   required,
@@ -187,16 +209,23 @@ export function SelectField<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid || undefined}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <span aria-hidden> *</span>}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <span aria-hidden> *</span>}
+            </FieldLabel>
+          )}
+          {description && <FieldDescription>{description}</FieldDescription>}
           <Select
             value={field.value ?? ""}
             onValueChange={field.onChange}
             disabled={disabled}
           >
-            <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
+            <SelectTrigger
+              id={field.name}
+              aria-invalid={fieldState.invalid}
+              aria-label={!label ? ariaLabel ?? placeholder ?? field.name : undefined}
+            >
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -207,7 +236,7 @@ export function SelectField<T extends FieldValues>({
               ))}
             </SelectContent>
           </Select>
-          {description && <FieldDescription>{description}</FieldDescription>}
+          {helper && <FieldDescription>{helper}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
           )}
@@ -221,6 +250,7 @@ export function CheckboxField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
   disabled,
 }: BaseFieldProps<T>) {
@@ -238,10 +268,13 @@ export function CheckboxField<T extends FieldValues>({
             checked={field.value ?? false}
             onCheckedChange={field.onChange}
             disabled={disabled}
+            aria-label={!label ? ariaLabel ?? field.name : undefined}
           />
-          <FieldLabel htmlFor={field.name} className="font-normal">
-            {label}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name} className="font-normal">
+              {label}
+            </FieldLabel>
+          )}
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
@@ -256,6 +289,7 @@ export function SwitchField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
   disabled,
 }: BaseFieldProps<T>) {
@@ -270,10 +304,13 @@ export function SwitchField<T extends FieldValues>({
             checked={field.value ?? false}
             onCheckedChange={field.onChange}
             disabled={disabled}
+            aria-label={!label ? ariaLabel ?? field.name : undefined}
           />
-          <FieldLabel htmlFor={field.name} className="font-normal">
-            {label}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name} className="font-normal">
+              {label}
+            </FieldLabel>
+          )}
           {description && <FieldDescription>{description}</FieldDescription>}
         </Field>
       )}

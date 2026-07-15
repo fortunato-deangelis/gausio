@@ -2,16 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/shared/toast";
-import { Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  Check,
+  ChevronRight,
+  ClipboardCheck,
+  Target,
+} from "lucide-react";
 import {
   AppCard,
   Button,
   DetailList,
   FormError,
   FormGrid,
+  LegalConsent,
   SelectField,
   Spinner,
   TextField,
@@ -52,10 +61,26 @@ const CHANNELS = [
   { value: "altro", label: "Altro" },
 ];
 
-const STEPS = ["La tua azienda", "Profilo aziendale", "Riepilogo"] as const;
+const STEPS = [
+  {
+    title: "La tua azienda",
+    subtitle: "Esigenze e dimensioni",
+    icon: Target,
+  },
+  {
+    title: "Profilo aziendale",
+    subtitle: "Dati e contatti",
+    icon: Building2,
+  },
+  {
+    title: "Riepilogo",
+    subtitle: "Controlla e crea",
+    icon: ClipboardCheck,
+  },
+] as const;
 
 const STEP_FIELDS: Record<number, (keyof OnboardingInput)[]> = {
-  0: ["sector", "companySize", "goal", "discoveryChannel"],
+  0: ["sector", "companySize", "goal", "discoveryChannel", "termsAccepted"],
   1: [
     "name",
     "vatNumber",
@@ -99,6 +124,7 @@ export function OnboardingWizard() {
       companySize: "",
       goal: "",
       discoveryChannel: "",
+      termsAccepted: false,
     },
   });
 
@@ -122,70 +148,124 @@ export function OnboardingWizard() {
   const values = form.watch();
 
   return (
-    <AppCard className="w-full max-w-2xl">
+    <AppCard className="w-full rounded-[2px] bg-white shadow-sm">
       {/* Indicatore di step */}
-      <ol className="mb-6 flex items-center gap-2" aria-label="Avanzamento">
-        {STEPS.map((label, index) => (
-          <li key={label} className="flex flex-1 items-center gap-2">
-            <span
-              className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
-                index < step
-                  ? "bg-primary text-primary-foreground"
-                  : index === step
-                    ? "bg-primary/15 text-primary ring-2 ring-primary"
-                    : "bg-muted text-muted-foreground"
-              )}
+      <ol
+        className="mb-8 flex flex-col gap-3 border-b border-black/10 pb-6 sm:flex-row sm:items-center sm:gap-4"
+        aria-label="Avanzamento"
+      >
+        {STEPS.map(({ title, subtitle, icon: Icon }, index) => {
+          const state =
+            index < step
+              ? "completed"
+              : index === step
+                ? "current"
+                : "upcoming";
+
+          return (
+            <li
+              key={title}
+              data-state={state}
+              className="flex min-w-0 flex-1 items-center gap-3"
               aria-current={index === step ? "step" : undefined}
             >
-              {index < step ? <Check aria-hidden className="size-4" /> : index + 1}
-            </span>
-            <span
-              className={cn(
-                "hidden text-sm sm:block",
-                index === step ? "font-medium" : "text-muted-foreground"
+              <span
+                className={cn(
+                  "flex size-10 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
+                  index < step
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : index === step
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border bg-muted text-muted-foreground"
+                )}
+              >
+                {index < step ? (
+                  <Check aria-hidden className="size-5" />
+                ) : (
+                  <Icon aria-hidden className="size-5" />
+                )}
+              </span>
+              <span className="flex min-w-0 flex-col gap-1">
+                <span
+                  className={cn(
+                    "truncate text-base font-bold",
+                    index === step
+                      ? "text-primary"
+                      : index < step
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                  )}
+                >
+                  {title}
+                </span>
+                <span className="truncate text-sm text-muted-foreground">
+                  {subtitle}
+                </span>
+              </span>
+              {index < STEPS.length - 1 && (
+                <ChevronRight
+                  aria-hidden
+                  className={cn(
+                    "ml-auto size-5 shrink-0",
+                    index < step ? "text-primary" : "text-muted-foreground/60"
+                  )}
+                />
               )}
-            >
-              {label}
-            </span>
-            {index < STEPS.length - 1 && (
-              <span aria-hidden className="h-px flex-1 bg-border" />
-            )}
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ol>
 
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
+      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
         {step === 0 && (
-          <FormGrid>
-            <SelectField
+          <>
+            <FormGrid>
+              <SelectField
+                control={form.control}
+                name="sector"
+                label="Settore"
+                description="Seleziona l'ambito principale in cui opera l'azienda."
+                options={SECTORS}
+                required
+              />
+              <SelectField
+                control={form.control}
+                name="companySize"
+                label="Dimensione azienda"
+                description="Indica il numero complessivo di persone nel team."
+                options={SIZES}
+                required
+              />
+              <SelectField
+                control={form.control}
+                name="goal"
+                label="Obiettivo principale"
+                description="Scegli il primo processo che vuoi rendere più semplice."
+                options={GOALS}
+                required
+              />
+              <SelectField
+                control={form.control}
+                name="discoveryChannel"
+                label="Come ci hai conosciuto?"
+                description="Questa informazione è facoltativa."
+                options={CHANNELS}
+              />
+            </FormGrid>
+            <Controller
               control={form.control}
-              name="sector"
-              label="Settore"
-              options={SECTORS}
-              required
+              name="termsAccepted"
+              render={({ field, fieldState }) => (
+                <LegalConsent
+                  id={field.name}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  required
+                  error={fieldState.error?.message}
+                />
+              )}
             />
-            <SelectField
-              control={form.control}
-              name="companySize"
-              label="Dimensione azienda"
-              options={SIZES}
-              required
-            />
-            <SelectField
-              control={form.control}
-              name="goal"
-              label="Obiettivo principale"
-              options={GOALS}
-              required
-            />
-            <SelectField
-              control={form.control}
-              name="discoveryChannel"
-              label="Come ci hai conosciuto?"
-              options={CHANNELS}
-            />
-          </FormGrid>
+          </>
         )}
 
         {step === 1 && (
@@ -235,21 +315,40 @@ export function OnboardingWizard() {
 
         <FormError message={error} />
 
-        <div className="flex justify-between gap-2 pt-2">
+        <div className="flex flex-col-reverse justify-between gap-3 border-t border-black/10 pt-6 sm:flex-row">
           <Button
             type="button"
             variant="outline"
+            size="lg"
             onClick={() => setStep((s) => Math.max(s - 1, 0))}
             disabled={step === 0 || form.formState.isSubmitting}
+            className="sm:min-w-36"
           >
+            <ArrowLeft aria-hidden className="size-[18px]" />
             Indietro
           </Button>
           {step < STEPS.length - 1 ? (
-            <Button type="button" onClick={next}>
+            <Button
+              key="continue"
+              type="button"
+              size="lg"
+              onClick={(event) => {
+                event.preventDefault();
+                void next();
+              }}
+              className="sm:min-w-36"
+            >
               Continua
+              <ArrowRight aria-hidden className="size-[18px]" />
             </Button>
           ) : (
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              key="submit"
+              type="submit"
+              size="lg"
+              disabled={form.formState.isSubmitting}
+              className="sm:min-w-48"
+            >
               {form.formState.isSubmitting && <Spinner className="size-4" />}
               Crea workspace
             </Button>

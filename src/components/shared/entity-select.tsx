@@ -7,7 +7,7 @@ import {
   type FieldPath,
   type FieldValues,
 } from "react-hook-form";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronDown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -68,6 +68,7 @@ type EntitySelectProps = Readonly<{
   quickCreate?: QuickCreateRender;
   id?: string;
   "aria-invalid"?: boolean;
+  "aria-label"?: string;
 }>;
 
 export function EntitySelect({
@@ -83,6 +84,7 @@ export function EntitySelect({
   quickCreate,
   id,
   "aria-invalid": ariaInvalid,
+  "aria-label": ariaLabel,
 }: EntitySelectProps) {
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -103,16 +105,18 @@ export function EntitySelect({
           <Button
             id={id}
             variant="outline"
+            size="base"
             role="combobox"
             aria-expanded={open}
             aria-invalid={ariaInvalid}
+            aria-label={ariaLabel}
             disabled={disabled}
             className="w-full justify-between font-normal"
           >
             <span className={cn(!selected && "text-muted-foreground", "truncate")}>
               {selected?.label ?? placeholder}
             </span>
-            <ChevronsUpDown aria-hidden className="size-4 shrink-0 opacity-50" />
+            <ChevronDown aria-hidden className="size-[18px] shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -149,7 +153,7 @@ export function EntitySelect({
                     <div className="flex flex-col">
                       <span>{option.label}</span>
                       {option.description && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {option.description}
                         </span>
                       )}
@@ -203,8 +207,10 @@ export function EntitySelect({
 type EntitySelectFieldProps<T extends FieldValues> = Readonly<{
   control: Control<T>;
   name: FieldPath<T>;
-  label: string;
+  label?: string;
+  ariaLabel?: string;
   description?: string;
+  helper?: string;
   required?: boolean;
 }> &
   Omit<EntitySelectProps, "value" | "onChange" | "id" | "aria-invalid">;
@@ -214,7 +220,9 @@ export function EntitySelectField<T extends FieldValues>({
   control,
   name,
   label,
+  ariaLabel,
   description,
+  helper,
   required,
   ...selectProps
 }: EntitySelectFieldProps<T>) {
@@ -224,18 +232,29 @@ export function EntitySelectField<T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid || undefined}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <span aria-hidden> *</span>}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <span aria-hidden> *</span>}
+            </FieldLabel>
+          )}
+          {description && <FieldDescription>{description}</FieldDescription>}
           <EntitySelect
             {...selectProps}
             id={field.name}
             value={field.value ?? null}
             onChange={field.onChange}
             aria-invalid={fieldState.invalid}
+            aria-label={
+              !label
+                ? ariaLabel ??
+                  selectProps["aria-label"] ??
+                  selectProps.placeholder ??
+                  field.name
+                : selectProps["aria-label"]
+            }
           />
-          {description && <FieldDescription>{description}</FieldDescription>}
+          {helper && <FieldDescription>{helper}</FieldDescription>}
           {fieldState.error && (
             <FieldError>{fieldState.error.message}</FieldError>
           )}

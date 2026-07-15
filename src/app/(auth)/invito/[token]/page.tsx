@@ -4,6 +4,7 @@ import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { workspaceInvitations, workspaces } from "@/server/db/schema";
 import { acceptInvitation } from "@/features/workspaces/actions";
+import { CenteredAuthShell } from "@/features/auth/components/auth-shell";
 import { AppCard, Button } from "@/components/shared";
 
 export const metadata = { title: "Invito" };
@@ -47,9 +48,9 @@ export default async function InvitoPage({
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-background px-4">
+    <CenteredAuthShell>
       <AppCard
-        className="w-full max-w-md text-center"
+        className="w-full max-w-md rounded-[2px] text-center"
         title={isValid ? "Sei stato invitato!" : "Invito non valido"}
       >
         {isValid ? (
@@ -64,7 +65,7 @@ export default async function InvitoPage({
                 {errore}
               </p>
             )}
-            <Button type="submit" className="w-full">
+            <Button type="submit" size="lg" className="w-full">
               Accetta invito
             </Button>
           </form>
@@ -75,6 +76,6 @@ export default async function InvitoPage({
           </p>
         )}
       </AppCard>
-    </main>
+    </CenteredAuthShell>
   );
 }

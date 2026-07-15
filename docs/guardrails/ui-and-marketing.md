@@ -39,6 +39,64 @@ questo documento, così il guardrail non rimane obsoleto.
   navbar e drawer è la stessa CTA, non una seconda azione.
 - Non aggiungere CTA con label alternative senza una nuova decisione esplicita.
 
+## Campi form, select e dropdown
+
+- Input, date/time input, select, combobox/multiselect e trigger dei dropdown
+  standard misurano `40px` in altezza, usano testo `text-base` e radius `2px`.
+  Le textarea mantengono l'altezza necessaria al contenuto, ma condividono
+  `text-base` e radius `2px`.
+- Le icone chevron dei trigger select, combobox e multiselect misurano
+  `18px × 18px`.
+- Le opzioni interne di select, combobox/multiselect e dropdown hanno altezza
+  minima `40px`, testo `text-base` e radius `2px`. Le descrizioni opzionali
+  delle singole opzioni usano `text-sm`.
+- La struttura verticale di ogni campo è: label, descrizione opzionale,
+  controllo, helper opzionale/errore. Tra ogni elemento presente ci sono `8px`.
+- La label visiva e la descrizione sono entrambe opzionali e indipendenti: non
+  riservare spazio vuoto quando una delle due manca. Se la label visiva non è
+  prevista, il controllo deve comunque ricevere un nome accessibile equivalente
+  tramite `ariaLabel`/`aria-label` (con placeholder e nome campo come fallback).
+- Le label dei campi usano `text-base font-bold`; descrizioni, helper ed errori
+  usano `text-sm`.
+- Queste regole vivono nei primitivi e nei wrapper condivisi: non duplicarle
+  con classi locali nelle feature.
+
+## Onboarding
+
+- La pagina `/onboarding` usa sempre il contenitore `w-full max-w-360`, quindi
+  ha una larghezza di riferimento desktop di `1440px`; sotto tale larghezza si
+  adatta al viewport mantenendo il padding laterale responsive del layout auth.
+- La direzione visiva dell'onboarding è la stessa adottata dalla home: palette
+  bianco e `#f5f5f7`, superfici piatte, tipografia editoriale ampia, spaziatura
+  generosa, brand tramite `BrandLogo` e radius `2px` per card, CTA e controlli.
+- Il logo è allineato in alto a sinistra in una testata trasparente. La pagina
+  termina con lo stesso footer minimale con copyright usato nell'area di
+  accesso, mantenendo il wizard centrato nello spazio disponibile.
+- Non introdurre nell'onboarding gradienti, effetto glass, ombre marcate o un
+  linguaggio visuale separato dalla landing; ogni evoluzione deve restare
+  coerente con la gerarchia e la sobrietà della home.
+- Prima di proseguire dal primo step è obbligatorio accettare Termini e Privacy
+  tramite lo switch rettangolare condiviso; la validazione è anche server-side.
+
+## Accesso e autenticazione
+
+- `/sign-in` usa il contenitore `w-full max-w-360` da `1440px` e la stessa
+  direzione visiva della home: bianco, `#f5f5f7`, superfici piatte, tipografia
+  editoriale, spaziatura ampia e radius `2px`.
+- Su desktop la pagina è divisa in due colonne: visual editoriale a sinistra e
+  flussi `Accedi`, `Registrati`, `Recupera` a destra. Su mobile il visual è
+  nascosto e restano soltanto logo, form e copyright.
+- `BrandLogo` resta sempre in alto su una testata trasparente, senza fascia di
+  background autonoma. In basso compare un footer minimale con copyright.
+- I visual auth sono asset DiceBear `notionists` CC0 salvati localmente sotto
+  `public/auth`; non dipendere dall'API DiceBear durante il rendering.
+- Le tre modalità usano il toggle group condiviso. Login, registrazione e reset
+  restano delegati a Zitadel: la registrazione apre il flusso con
+  `prompt=create`, mentre il recupero usa il self-service del login ospitato.
+- Registrazione e onboarding richiedono l'accettazione esplicita di Termini e
+  Privacy tramite lo switch rettangolare condiviso. I link a entrambe le pagine
+  legali restano visibili nell'area form di ogni modalità.
+
 ## Toast
 
 - Usare il wrapper `toast` da `@/components/shared/toast`, mai importare
@@ -130,9 +188,11 @@ questo documento, così il guardrail non rimane obsoleto.
   con radius `2px`.
 - Il corpo del testo è almeno `text-base`; le tabelle devono rimanere
   consultabili su mobile tramite overflow orizzontale.
-- Nella pagina `/preferenza-cookie`, i pulsanti usano size `base`.
-- Gli switch della pagina sono rettangolari: root `40px × 24px`, radius `2px`;
-  thumb interno `18px × 18px`, radius `2px`, con margini simmetrici di `3px`.
+- Nel banner di consenso e nella pagina `/preferenza-cookie`, tutti i pulsanti
+  usano size `base` e radius `2px`.
+- Gli switch del banner e della pagina preferenze usano il componente condiviso
+  nella variante rettangolare: root `40px × 24px`, radius `2px`; thumb interno
+  `18px × 18px`, radius `2px`, con margini simmetrici di `3px`.
 
 ## Stati 404 ed errore pubblico
 
