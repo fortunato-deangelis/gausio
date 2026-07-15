@@ -7,7 +7,6 @@ const PRODUCT_LINKS = [
   { label: "Funzionalità", href: "/#funzionalita" },
   { label: "Prezzi", href: "/#prezzi" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Accedi", href: "/sign-in" },
 ] as const;
 
 const LEGAL_LINKS = [
@@ -29,8 +28,7 @@ export function PublicFooter() {
         <div className="flex flex-col gap-3">
           <BrandLogo />
           <p className="text-sm text-muted-foreground">
-            Il gestionale all-in-one per clienti, ordini, fatture, magazzino,
-            commesse, personale e qualità ISO.
+            Più ordine nel lavoro. Più spazio per far crescere la tua azienda.
           </p>
         </div>
 

@@ -1,463 +1,291 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import {
-  ArrowRight,
-  Boxes,
-  Briefcase,
-  Building2,
-  CheckCircle2,
-  Contact,
-  FileOutput,
-  FileSpreadsheet,
-  KanbanSquare,
-  Quote,
-  Receipt,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-  UserPlus,
-  Users,
-  UsersRound,
-} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  Badge,
-  buttonVariants,
 } from "@/components/shared";
-import { cn } from "@/lib/utils";
+import { ProductScreenPlaceholder } from "@/features/marketing/components/product-screen-placeholder";
 
 export const metadata: Metadata = {
-  title: "Gausio — Il gestionale all-in-one per la tua azienda",
+  title: "Gausio — Tutto torna.",
   description:
-    "Clienti e fornitori, ordini, fatture, DDT, magazzino, commesse, personale e documentazione ISO: tutto in un'unica piattaforma.",
+    "Gausio collega persone, informazioni e lavoro quotidiano in un unico gestionale, così la tua azienda resta sempre sotto controllo.",
 };
-
-const STATS = [
-  { value: "1.200+", label: "Aziende attive" },
-  { value: "3,5 mln", label: "Documenti gestiti" },
-  { value: "11", label: "Moduli integrati" },
-  { value: "99,9%", label: "Uptime garantito" },
-] as const;
-
-const FEATURES = [
-  {
-    icon: Contact,
-    title: "Clienti e fornitori",
-    description:
-      "Anagrafica unica con qualifica fornitori per i tuoi audit ISO.",
-  },
-  {
-    icon: Receipt,
-    title: "Ordini emessi e ricevuti",
-    description:
-      "Ciclo attivo e passivo con righe, stati e collegamento alle commesse.",
-  },
-  {
-    icon: FileOutput,
-    title: "Fatture con editor",
-    description:
-      "Crea fatture riga per riga con IVA, sconti e totali calcolati in automatico.",
-  },
-  {
-    icon: Truck,
-    title: "DDT",
-    description:
-      "Documenti di trasporto collegati a ordini, articoli e movimenti di magazzino.",
-  },
-  {
-    icon: Boxes,
-    title: "Magazzino",
-    description:
-      "Carico, scarico e rettifiche con giacenze aggiornate in tempo reale.",
-  },
-  {
-    icon: Briefcase,
-    title: "Commesse",
-    description:
-      "Il perno che collega vendite, acquisti, ore lavorate e marginalità.",
-  },
-  {
-    icon: KanbanSquare,
-    title: "Project management",
-    description: "Progetti e task con board di stato, priorità e assegnatari.",
-  },
-  {
-    icon: Users,
-    title: "Personale",
-    description:
-      "Anagrafica dipendenti, ferie, permessi, malattie, timbrature e schede lavoro.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Documenti ISO",
-    description:
-      "Procedure e documentazione con revisioni per ISO 9001, 27001 e altre.",
-  },
-  {
-    icon: UsersRound,
-    title: "Permessi granulari",
-    description:
-      "Ruoli con permessi per modulo: visualizza, aggiungi, modifica, elimina.",
-  },
-  {
-    icon: FileSpreadsheet,
-    title: "Export PDF ed Excel",
-    description:
-      "Elenchi e dettagli esportabili in PDF e XLSX con un clic.",
-  },
-  {
-    icon: Building2,
-    title: "Multi-workspace",
-    description:
-      "Gestisci più aziende con lo stesso account e passa dall'una all'altra.",
-  },
-] as const;
-
-const STEPS = [
-  {
-    icon: UserPlus,
-    title: "1. Registrati",
-    description:
-      "Crea il tuo account in pochi secondi con l'identità aziendale gestita da Zitadel.",
-  },
-  {
-    icon: Building2,
-    title: "2. Crea il workspace",
-    description:
-      "Rispondi a poche domande di onboarding e configura il profilo della tua azienda.",
-  },
-  {
-    icon: UsersRound,
-    title: "3. Invita il team",
-    description:
-      "Aggiungi colleghi e assegna ruoli: ognuno vede solo i moduli di sua competenza.",
-  },
-] as const;
-
-const PLANS = [
-  {
-    name: "Free",
-    price: "0 €",
-    period: "per sempre",
-    highlight: false,
-    features: [
-      "1 workspace",
-      "3 utenti inclusi",
-      "Clienti, ordini e fatture",
-      "Export PDF",
-    ],
-    cta: "Inizia gratis",
-  },
-  {
-    name: "Business",
-    price: "29 €",
-    period: "utente / mese",
-    highlight: true,
-    features: [
-      "Workspace illimitati",
-      "Utenti illimitati",
-      "Tutti gli 11 moduli",
-      "Export PDF ed Excel",
-      "Permessi granulari",
-      "Supporto prioritario",
-    ],
-    cta: "Prova Business",
-  },
-  {
-    name: "Enterprise",
-    price: "Su misura",
-    period: "contattaci",
-    highlight: false,
-    features: [
-      "Tutto di Business",
-      "SSO dedicato",
-      "SLA personalizzato",
-      "Onboarding assistito",
-    ],
-    cta: "Contattaci",
-  },
-] as const;
-
-const TESTIMONIALS = [
-  {
-    quote:
-      "Abbiamo sostituito quattro strumenti diversi con Gausio. Ordini, fatture e magazzino finalmente parlano tra loro.",
-    name: "Laura Bianchi",
-    role: "Titolare, OfficinaMeccanica B&C",
-  },
-  {
-    quote:
-      "La gestione documentale ISO 9001 con revisioni ci ha fatto superare l'audit senza stress. Consigliatissimo.",
-    name: "Marco Ferretti",
-    role: "Quality Manager, Ferretti Impianti",
-  },
-  {
-    quote:
-      "I permessi per modulo sono perfetti: il commerciale vede le sue cose, l'amministrazione le sue. Zero confusione.",
-    name: "Giulia Esposito",
-    role: "CFO, Esposito Logistics",
-  },
-] as const;
 
 const FAQS = [
   {
-    question: "Posso provare Gausio gratuitamente?",
+    question: "Posso sostituire gli strumenti che uso oggi?",
     answer:
-      "Sì: il piano Free è gratuito per sempre e include i moduli essenziali per un workspace con 3 utenti. Puoi passare a Business in qualsiasi momento.",
+      "Sì. La demo serve anche a capire quali strumenti possono essere riuniti e quali dati conviene portare con te. Il passaggio viene pianificato per gradi, senza fermare il lavoro quotidiano.",
   },
   {
-    question: "Come funziona l'autenticazione?",
+    question: "Il team deve cambiare completamente metodo?",
     answer:
-      "L'accesso è gestito da Zitadel, una piattaforma di identità open source: login sicuro, MFA e single sign-on senza password memorizzate da noi.",
+      "No. Gausio dà una struttura comune al modo in cui già lavorate. Le attività diventano più leggibili, i passaggi più chiari e le informazioni smettono di dipendere dalla memoria delle singole persone.",
   },
   {
-    question: "Posso gestire più aziende con un solo account?",
+    question: "Come aiuta a evitare ritardi e urgenze?",
     answer:
-      "Certo. Ogni azienda è un workspace separato con i propri dati, ruoli e permessi: passi dall'una all'altra con un clic.",
+      "Rende visibili priorità, scadenze e passaggi ancora aperti prima che diventino problemi. Chi deve agire trova subito il contesto, senza ricostruirlo tra email, messaggi e fogli separati.",
   },
   {
-    question: "Gausio è adatto alle certificazioni ISO?",
+    question: "Quanto costa Gausio?",
     answer:
-      "Sì: il modulo Qualità gestisce procedure e documenti con codici, revisioni, approvazioni e storico, pensato per ISO 9001, ISO 27001, ISO 14001 e ISO 45001. Inoltre puoi tracciare i fornitori qualificati.",
-  },
-  {
-    question: "I miei dati sono al sicuro?",
-    answer:
-      "I dati risiedono in un database PostgreSQL dedicato, con isolamento per workspace e permessi granulari per modulo. Puoi esportare tutto in qualsiasi momento in PDF o Excel.",
-  },
-  {
-    question: "Posso importare o esportare i dati?",
-    answer:
-      "Ogni elenco e ogni documento è esportabile in PDF e XLSX. Per import massivi contattaci: il piano Enterprise include l'onboarding assistito.",
+      "Dipende dalle dimensioni del team e dal percorso più adatto alla tua azienda. Durante la demo definiamo ciò che serve davvero, evitando pacchetti sovradimensionati e costi difficili da leggere.",
   },
 ] as const;
 
 export default function LandingPage() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-primary/15 via-primary/5 to-background"
-        />
-        <div
-          aria-hidden
-          className="absolute -top-24 right-0 size-96 rounded-full bg-chart-2/20 blur-3xl"
-        />
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-4 py-24 text-center">
-          <Badge className="bg-primary/15 text-primary border-transparent">
-            <Sparkles aria-hidden className="size-3.5" />
-            Gestionale all-in-one
-          </Badge>
-          <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Gestisci la tua azienda,{" "}
-            <span className="text-primary">tutto in un unico posto</span>
+      <section className="overflow-hidden bg-white px-5 pb-16 pt-24 sm:px-8 sm:pb-24 sm:pt-32 lg:pt-36">
+        <div className="mx-auto w-full max-w-[1200px] text-center">
+          <p className="text-lg font-semibold text-primary sm:text-xl">Gausio</p>
+          <h1 className="mx-auto mt-4 max-w-5xl text-5xl font-bold leading-[0.95] tracking-[-0.055em] text-balance sm:text-7xl lg:text-8xl">
+            La tua azienda.
+            <span className="block text-primary">Tutto torna.</span>
           </h1>
-          <p className="max-w-2xl text-lg text-muted-foreground">
-            Clienti e fornitori, ordini, fatture, DDT, magazzino, commesse,
-            personale e qualità ISO: Gausio unisce tutti i processi della tua
-            azienda in un&apos;unica piattaforma collegata.
+          <p className="mx-auto mt-7 max-w-3xl text-xl leading-relaxed text-muted-foreground sm:text-2xl">
+            Quando clienti, ordini, attività e documenti vivono nello stesso
+            flusso, il team smette di rincorrere informazioni e torna a far
+            avanzare il lavoro.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/sign-in" className={cn(buttonVariants({ size: "lg" }))}>
-              Inizia gratis
-              <ArrowRight aria-hidden className="size-4" />
-            </Link>
-            <Link
-              href="#funzionalita"
-              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-            >
-              Scopri le funzionalità
-            </Link>
-          </div>
-          <dl className="mt-10 grid w-full max-w-3xl grid-cols-2 gap-6 sm:grid-cols-4">
-            {STATS.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-1">
-                <dt className="order-2 text-sm text-muted-foreground">
-                  {stat.label}
-                </dt>
-                <dd className="order-1 text-3xl font-bold text-primary">
-                  {stat.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <ProductScreenPlaceholder
+            variant="overview"
+            caption="Panoramica aziendale"
+            className="mt-14 sm:mt-20"
+          />
         </div>
       </section>
 
-      {/* Funzionalità */}
-      <section id="funzionalita" className="scroll-mt-20 py-20">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Tutti i moduli di cui hai bisogno
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Ogni modulo è collegato agli altri: crea un cliente direttamente
-              dal form della commessa, collega fatture agli ordini, scarica il
-              magazzino dai DDT.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((feature) => (
-              <div
-                key={feature.title}
-                className="group rounded-xl border bg-card p-6 transition-shadow hover:shadow-md"
-              >
-                <span className="flex size-11 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                  <feature.icon aria-hidden className="size-5" />
-                </span>
-                <h3 className="mt-4 font-semibold">{feature.title}</h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <section
+        id="funzionalita"
+        className="scroll-mt-20 bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32"
+      >
+        <div className="mx-auto w-full max-w-[1200px]">
+          <h2 className="text-4xl font-bold tracking-[-0.04em] sm:text-6xl">
+            Prima di tutto, cosa cambia.
+          </h2>
 
-      {/* Come funziona */}
-      <section className="border-y bg-card/50 py-20">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">Come funziona</h2>
-            <p className="mt-3 text-muted-foreground">
-              Dalla registrazione al team operativo in meno di dieci minuti.
-            </p>
-          </div>
-          <ol className="grid gap-6 sm:grid-cols-3">
-            {STEPS.map((step) => (
-              <li
-                key={step.title}
-                className="flex flex-col items-center gap-3 rounded-xl border bg-background p-8 text-center"
-              >
-                <span className="flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <step.icon aria-hidden className="size-5" />
-                </span>
-                <h3 className="font-semibold">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {step.description}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+          <div className="mt-12 grid gap-5 lg:grid-cols-2">
+            <article className="flex min-h-[30rem] flex-col overflow-hidden rounded-[2px] bg-white p-7 sm:min-h-[44rem] sm:p-10">
+              <p className="text-base font-semibold text-primary">
+                La giornata giusta, fin dall’inizio.
+              </p>
+              <h3 className="mt-3 max-w-xl text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-5xl">
+                Parti da ciò che richiede attenzione. Non da ciò che devi
+                cercare.
+              </h3>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Scadenze, attività ferme e priorità emergono subito. Sai dove
+                intervenire prima che una piccola attesa diventi un’urgenza.
+              </p>
+              <ProductScreenPlaceholder
+                variant="overview"
+                caption="Priorità e attività del giorno"
+                className="mt-auto translate-y-12"
+              />
+            </article>
 
-      {/* Prezzi */}
-      <section id="prezzi" className="scroll-mt-20 py-20">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Prezzi semplici e trasparenti
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Parti gratis, cresci quando vuoi. Nessun costo nascosto.
-            </p>
-          </div>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={cn(
-                  "flex flex-col gap-6 rounded-xl border bg-card p-8",
-                  plan.highlight &&
-                    "relative border-primary shadow-lg shadow-primary/10"
-                )}
-              >
-                {plan.highlight && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground border-transparent">
-                    Più scelto
-                  </Badge>
-                )}
+            <article className="flex min-h-[30rem] flex-col overflow-hidden rounded-[2px] bg-white p-7 sm:min-h-[44rem] sm:p-10">
+              <p className="text-base font-semibold text-primary">
+                Una sola versione della verità.
+              </p>
+              <h3 className="mt-3 max-w-xl text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-5xl">
+                Un dato entra una volta. E continua a lavorare.
+              </h3>
+              <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Niente copie tra fogli, email e strumenti diversi. Ogni
+                passaggio riparte dalle informazioni già raccolte.
+              </p>
+              <ProductScreenPlaceholder
+                variant="workflow"
+                caption="Flusso di lavoro collegato"
+                className="mt-auto translate-y-12"
+              />
+            </article>
+
+            <article className="overflow-hidden rounded-[2px] bg-white p-7 sm:p-10 lg:col-span-2">
+              <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
                 <div>
-                  <h3 className="text-lg font-semibold">{plan.name}</h3>
-                  <p className="mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>{" "}
-                    <span className="text-sm text-muted-foreground">
-                      {plan.period}
-                    </span>
+                  <p className="text-base font-semibold text-primary">
+                    Da una persona all’altra, senza vuoti.
+                  </p>
+                  <h3 className="mt-3 text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-5xl">
+                    Il lavoro cambia mano. Il contesto resta.
+                  </h3>
+                  <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+                    Commerciale, amministrazione e operatività lavorano sullo
+                    stesso filo. Meno domande ripetute, meno passaggi persi,
+                    meno tempo per ricostruire cosa è già successo.
                   </p>
                 </div>
-                <ul className="flex flex-1 flex-col gap-2.5">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
-                      <CheckCircle2
-                        aria-hidden
-                        className="mt-0.5 size-4 shrink-0 text-success"
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={plan.name === "Enterprise" ? "/contatti" : "/sign-in"}
-                  className={cn(
-                    buttonVariants({
-                      variant: plan.highlight ? "default" : "outline",
-                      size: "lg",
-                    }),
-                    "w-full"
-                  )}
-                >
-                  {plan.cta}
-                </Link>
+                <ProductScreenPlaceholder
+                  variant="workflow"
+                  caption="Passaggi tra reparti"
+                />
               </div>
-            ))}
+            </article>
           </div>
         </div>
       </section>
 
-      {/* Testimonianze */}
-      <section className="border-y bg-card/50 py-20">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Le aziende che ci hanno scelto
+      <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
+        <div className="mx-auto w-full max-w-[1200px]">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-lg font-semibold text-primary sm:text-xl">
+              Fatto per restare in controllo.
+            </p>
+            <h2 className="mt-4 text-5xl font-bold leading-[0.98] tracking-[-0.05em] text-balance sm:text-7xl">
+              Una decisione non dovrebbe iniziare con:
+              <span className="block text-muted-foreground">
+                “Dove trovo il dato?”
+              </span>
+            </h2>
+            <p className="mx-auto mt-7 max-w-3xl text-xl leading-relaxed text-muted-foreground">
+              Andamento, carichi e punti critici diventano leggibili mentre il
+              lavoro accade. Non quando è ormai troppo tardi per intervenire.
+            </p>
+          </div>
+          <ProductScreenPlaceholder
+            variant="insights"
+            caption="Andamento e indicatori aziendali"
+            className="mt-16 sm:mt-20"
+          />
+        </div>
+      </section>
+
+      <section className="bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32">
+        <div className="mx-auto w-full max-w-[1200px]">
+          <div className="max-w-4xl">
+            <p className="text-lg font-semibold text-primary sm:text-xl">
+              Meno attrito. Più avanzamento.
+            </p>
+            <h2 className="mt-4 text-5xl font-bold leading-[0.98] tracking-[-0.05em] text-balance sm:text-7xl">
+              Il lavoro non dovrebbe ricominciare da zero a ogni passaggio.
             </h2>
           </div>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {TESTIMONIALS.map((testimonial) => (
-              <figure
-                key={testimonial.name}
-                className="flex flex-col gap-4 rounded-xl border bg-background p-6"
-              >
-                <Quote aria-hidden className="size-6 text-primary/40" />
-                <blockquote className="flex-1 text-sm leading-6 text-muted-foreground">
-                  “{testimonial.quote}”
-                </blockquote>
-                <figcaption>
-                  <p className="text-sm font-semibold">{testimonial.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {testimonial.role}
-                  </p>
-                </figcaption>
-              </figure>
-            ))}
+
+          <div className="mt-14 grid gap-5 lg:grid-cols-2">
+            <article className="overflow-hidden rounded-[2px] bg-white">
+              <div className="p-7 sm:p-10">
+                <p className="text-base font-semibold text-primary">
+                  Le scadenze non diventano sorprese.
+                </p>
+                <h3 className="mt-3 text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-5xl">
+                  Prima lo vedi. Prima lo risolvi.
+                </h3>
+                <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+                  Ciò che è fermo, in ritardo o in attesa non resta nascosto
+                  dentro una casella di posta.
+                </p>
+              </div>
+              <ProductScreenPlaceholder
+                variant="workflow"
+                caption="Scadenze e avanzamento"
+                className="m-4 mt-0 sm:m-6 sm:mt-0"
+              />
+            </article>
+
+            <article className="overflow-hidden rounded-[2px] bg-[#111111] text-white">
+              <div className="p-7 sm:p-10">
+                <p className="text-base font-semibold text-primary">
+                  I numeri arrivano prima delle sorprese.
+                </p>
+                <h3 className="mt-3 text-3xl font-bold leading-tight tracking-[-0.035em] sm:text-5xl">
+                  Il margine non si scopre a fine mese.
+                </h3>
+                <p className="mt-5 text-lg leading-relaxed text-white/65">
+                  Costi, tempo e valore restano leggibili mentre il lavoro
+                  procede. Così puoi correggere la rotta, non solo commentarla.
+                </p>
+              </div>
+              <ProductScreenPlaceholder
+                variant="insights"
+                caption="Margini e andamento"
+                className="m-4 mt-0 sm:m-6 sm:mt-0"
+              />
+            </article>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="scroll-mt-20 py-20">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-4">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight">
+      <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
+        <div className="mx-auto grid w-full max-w-[1200px] gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:gap-20">
+          <div>
+            <p className="text-lg font-semibold text-primary sm:text-xl">
+              Il team cambia. Il metodo resta.
+            </p>
+            <h2 className="mt-4 text-5xl font-bold leading-[0.98] tracking-[-0.05em] text-balance sm:text-7xl">
+              Ognuno vede ciò che serve.
+              <span className="block text-muted-foreground">
+                Tutti vedono la stessa azienda.
+              </span>
+            </h2>
+            <p className="mt-7 text-xl leading-relaxed text-muted-foreground">
+              Ruoli diversi, responsabilità chiare e un contesto condiviso.
+              Quando entra una nuova persona, il lavoro non deve essere
+              ricostruito da capo.
+            </p>
+          </div>
+          <ProductScreenPlaceholder
+            variant="team"
+            caption="Team, ruoli e responsabilità"
+          />
+        </div>
+      </section>
+
+      <section
+        id="prezzi"
+        className="scroll-mt-20 bg-[#f5f5f7] px-5 py-6 sm:px-8 sm:py-8"
+      >
+        <div className="mx-auto w-full max-w-[1200px] overflow-hidden rounded-[2px] bg-[#111111] px-7 py-16 text-white sm:px-12 sm:py-24">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-lg font-semibold text-primary sm:text-xl">
+              Più valore. Meno costi invisibili.
+            </p>
+            <h2 className="mt-4 text-5xl font-bold leading-[0.98] tracking-[-0.05em] text-balance sm:text-7xl">
+              Un unico gestionale. Non una collezione di abbonamenti.
+            </h2>
+            <p className="mx-auto mt-7 max-w-3xl text-xl leading-relaxed text-white/65">
+              Strumenti separati costano più del loro canone: richiedono copie,
+              controlli e collegamenti manuali. Gausio riunisce il lavoro e
+              cresce con ciò che serve davvero alla tua azienda.
+            </p>
+          </div>
+          <ProductScreenPlaceholder
+            variant="overview"
+            caption="Spazio di lavoro unificato"
+            className="mt-14 sm:mt-20"
+          />
+        </div>
+      </section>
+
+      <section
+        id="faq"
+        className="scroll-mt-20 bg-white px-5 py-24 sm:px-8 sm:py-36"
+      >
+        <div className="mx-auto grid w-full max-w-[1200px] gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+          <div>
+            <p className="text-lg font-semibold text-primary sm:text-xl">
               Domande frequenti
+            </p>
+            <h2 className="mt-4 text-5xl font-bold leading-none tracking-[-0.05em] sm:text-7xl">
+              Prima di partire.
             </h2>
           </div>
           <Accordion type="single" collapsible className="w-full">
             {FAQS.map((faq, index) => (
-              <AccordionItem key={faq.question} value={`faq-${index}`}>
-                <AccordionTrigger className="text-left">
+              <AccordionItem
+                key={faq.question}
+                value={"faq-" + index}
+                className="border-black/12"
+              >
+                <AccordionTrigger className="py-7 text-left text-xl font-semibold sm:text-2xl">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="max-w-3xl pb-7 text-lg leading-relaxed text-muted-foreground">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
@@ -466,30 +294,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA finale */}
-      <section className="pb-20">
-        <div className="mx-auto w-full max-w-6xl px-4">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-chart-2 px-8 py-16 text-center text-primary-foreground">
-            <h2 className="text-3xl font-bold tracking-tight">
-              Pronto a mettere ordine nella tua azienda?
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-primary-foreground/85">
-              Crea il tuo workspace gratuito: bastano due minuti, senza carta di
-              credito.
-            </p>
-            <div className="mt-8">
-              <Link
-                href="/sign-in"
-                className={cn(
-                  buttonVariants({ size: "lg", variant: "secondary" }),
-                  "bg-white text-primary hover:bg-white/90"
-                )}
-              >
-                Inizia gratis ora
-                <ArrowRight aria-hidden className="size-4" />
-              </Link>
-            </div>
-          </div>
+      <section className="bg-[#f5f5f7] px-5 py-24 text-center sm:px-8 sm:py-36">
+        <div className="mx-auto max-w-5xl">
+          <p className="text-5xl font-bold leading-[0.98] tracking-[-0.05em] text-balance sm:text-7xl">
+            Quando tutto torna,
+            <span className="block text-primary">puoi guardare più avanti.</span>
+          </p>
         </div>
       </section>
     </>
