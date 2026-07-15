@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalArticle } from "@/features/marketing/components/legal-article";
+import { createPublicPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPublicPageMetadata({
   title: "Privacy Policy",
   description:
     "Informativa sul trattamento dei dati personali ai sensi del Regolamento (UE) 2016/679 (GDPR).",
-};
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPolicyPage() {
   return (
@@ -25,7 +26,8 @@ export default function PrivacyPolicyPage() {
         legale in Via dell&apos;Innovazione 42, 00100 Roma (RM), P.IVA
         01234567890, contattabile all&apos;indirizzo email{" "}
         <a href="mailto:privacy@gausio.com">privacy@gausio.com</a> o
-        tramite la pagina <Link href="/contatti">Contatti</Link>.
+        all&apos;indirizzo{" "}
+        <a href="mailto:info@gausio.com">info@gausio.com</a>.
       </p>
 
       <h2>2. Categorie di dati trattati</h2>
@@ -48,8 +50,8 @@ export default function PrivacyPolicyPage() {
           dati necessari alla sicurezza e all&apos;erogazione del servizio.
         </li>
         <li>
-          <strong>Dati da modulo di contatto</strong>: nome, email, azienda e
-          contenuto del messaggio inviato tramite la pagina Contatti.
+          <strong>Dati delle richieste inviate via email</strong>: nome, email,
+          azienda e contenuto del messaggio.
         </li>
       </ul>
 

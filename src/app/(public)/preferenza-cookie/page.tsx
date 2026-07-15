@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { CookiePreferences } from "@/features/consent/components/cookie-preferences";
+import { createPublicPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPublicPageMetadata({
   title: "Preferenze cookie",
   description:
     "Gestisci il consenso all'uso dei cookie opzionali su Gausio.",
-};
+  path: "/preferenza-cookie",
+});
 
 export default function CookiePreferencesPage() {
   return (

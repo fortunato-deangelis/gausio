@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
   Accordion,
   AccordionContent,
@@ -6,12 +5,14 @@ import {
   AccordionTrigger,
 } from "@/components/shared";
 import { ProductScreenPlaceholder } from "@/features/marketing/components/product-screen-placeholder";
+import { createPublicPageMetadata, siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Gausio — Tutto torna.",
-  description:
-    "Gausio collega persone, informazioni e lavoro quotidiano in un unico gestionale, così la tua azienda resta sempre sotto controllo.",
-};
+export const metadata = createPublicPageMetadata({
+  title: siteConfig.title,
+  description: siteConfig.description,
+  path: "/",
+  absoluteTitle: true,
+});
 
 const FAQS = [
   {
@@ -60,7 +61,7 @@ export default function LandingPage() {
       </section>
 
       <section
-        id="funzionalita"
+        id="cosa-cambia"
         className="scroll-mt-20 bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32"
       >
         <div className="mx-auto w-full max-w-360">
@@ -131,7 +132,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
+      <section
+        id="controllo"
+        className="scroll-mt-20 bg-white px-5 py-24 sm:px-8 sm:py-36"
+      >
         <div className="mx-auto w-full max-w-360">
           <div className="mx-auto max-w-4xl text-center">
             <p className="text-lg font-semibold text-primary sm:text-xl">
@@ -156,7 +160,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32">
+      <section
+        id="meno-attrito"
+        className="scroll-mt-20 bg-[#f5f5f7] px-5 py-24 sm:px-8 sm:py-32"
+      >
         <div className="mx-auto w-full max-w-360">
           <div className="max-w-4xl">
             <p className="text-lg font-semibold text-primary sm:text-xl">
@@ -211,7 +218,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-24 sm:px-8 sm:py-36">
+      <section
+        id="team"
+        className="scroll-mt-20 bg-white px-5 py-24 sm:px-8 sm:py-36"
+      >
         <div className="mx-auto grid w-full max-w-360 gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:items-center lg:gap-20">
           <div>
             <p className="text-lg font-semibold text-primary sm:text-xl">

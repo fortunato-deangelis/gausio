@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalArticle } from "@/features/marketing/components/legal-article";
+import { createPublicPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPublicPageMetadata({
   title: "Cookie Policy",
   description:
     "Informativa sull'uso dei cookie e delle tecnologie similari sul sito e sull'applicazione Gausio.",
-};
+  path: "/cookie-policy",
+});
 
 export default function CookiePolicyPage() {
   return (

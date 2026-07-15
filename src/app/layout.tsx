@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Noto_Serif_Georgian, Geist_Mono } from "next/font/google";
 import { Toaster, TooltipProvider } from "@/components/shared";
 import { ThemeProvider } from "@/components/theme-provider";
+import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const fontSans = Geist({
@@ -21,11 +22,20 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Gausio — Il gestionale per la tua azienda",
-    template: "%s · Gausio",
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Gestionale aziendale completo: clienti e fornitori, ordini, fatture, DDT, magazzino, commesse, personale e documentazione ISO.",
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  appleWebApp: {
+    capable: true,
+    title: siteConfig.name,
+  },
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
 };
 
 export default function RootLayout({

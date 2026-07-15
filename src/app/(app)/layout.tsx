@@ -1,7 +1,24 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import type { ShellContext } from "@/components/layout/types";
 import { requireWorkspace } from "@/server/workspace";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    noimageindex: true,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noarchive: true,
+      noimageindex: true,
+    },
+  },
+};
 
 /** Shell della dashboard: sidebar + topbar, protetta da requireWorkspace. */
 export default async function AppLayout({

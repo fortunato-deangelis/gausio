@@ -1,5 +1,22 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { BrandLogo } from "@/components/shared";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    noimageindex: true,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noarchive: true,
+      noimageindex: true,
+    },
+  },
+};
 
 /** Shell minimale e centrata per le pagine di autenticazione/onboarding. */
 export default function AuthLayout({

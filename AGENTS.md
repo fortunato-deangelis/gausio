@@ -88,7 +88,7 @@ client; non importare direttamente `toast` da `sonner` nelle feature.
 ## Rotte (mappa completa)
 
 Pubbliche (group `(public)`, layout con navbar/footer/cookie banner):
-`/` landing, `/contatti`, `/privacy-policy`, `/cookie-policy`,
+`/` landing, `/privacy-policy`, `/cookie-policy`,
 `/termini-e-condizioni`, `/dichiarazione-di-accessibilita`,
 `/preferenza-cookie`. La vecchia `/preferenze-cookie` reindirizza alla rotta
 canonica singolare.

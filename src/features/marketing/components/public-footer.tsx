@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/shared";
-
-const PRODUCT_LINKS = [
-  { label: "Funzionalità", href: "/#funzionalita" },
-  { label: "Prezzi", href: "/#prezzi" },
-  { label: "FAQ", href: "/#faq" },
-] as const;
+import { PUBLIC_PRODUCT_LINKS } from "@/features/marketing/public-navigation";
 
 const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy-policy" },
@@ -33,7 +28,7 @@ export function PublicFooter() {
 
         <nav aria-label="Prodotto" className="flex flex-col gap-3">
           <h2 className="text-base font-semibold">Prodotto</h2>
-          {PRODUCT_LINKS.map((link) => (
+          {PUBLIC_PRODUCT_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -60,7 +55,13 @@ export function PublicFooter() {
         <div className="flex flex-col gap-3">
           <h2 className="text-base font-semibold">Contatti</h2>
           <p className="flex items-start gap-2 text-base leading-6 text-muted-foreground">
-            <Mail aria-hidden className="size-4" /> info@gausio.com
+            <Mail aria-hidden className="size-4" />
+            <a
+              href="mailto:info@gausio.com"
+              className="underline-offset-4 hover:text-foreground hover:underline"
+            >
+              info@gausio.com
+            </a>
           </p>
           <p className="flex items-start gap-2 text-base leading-6 text-muted-foreground">
             <Phone aria-hidden className="size-4" /> +39 06 1234 5678

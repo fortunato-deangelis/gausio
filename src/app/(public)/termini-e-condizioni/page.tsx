@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalArticle } from "@/features/marketing/components/legal-article";
+import { createPublicPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPublicPageMetadata({
   title: "Termini e condizioni",
   description:
     "Termini e condizioni d'uso della piattaforma Gausio.",
-};
+  path: "/termini-e-condizioni",
+});
 
 export default function TermsPage() {
   return (
@@ -154,8 +155,8 @@ export default function TermsPage() {
       <h2>11. Contatti</h2>
       <p>
         Per qualsiasi domanda sui presenti Termini:{" "}
-        <a href="mailto:legal@gausio.com">legal@gausio.com</a> o la
-        pagina <Link href="/contatti">Contatti</Link>.
+        <a href="mailto:legal@gausio.com">legal@gausio.com</a> o{" "}
+        <a href="mailto:info@gausio.com">info@gausio.com</a>.
       </p>
     </LegalArticle>
   );

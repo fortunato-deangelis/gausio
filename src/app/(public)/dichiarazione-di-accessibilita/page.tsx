@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
-import Link from "next/link";
 import { LegalArticle } from "@/features/marketing/components/legal-article";
+import { createPublicPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = createPublicPageMetadata({
   title: "Dichiarazione di accessibilità",
   description:
     "Stato di conformità del sito e dell'applicazione Gausio alle WCAG 2.2 livello AA.",
-};
+  path: "/dichiarazione-di-accessibilita",
+});
 
 export default function AccessibilityPage() {
   return (
@@ -77,8 +77,8 @@ export default function AccessibilityPage() {
       <h2>Feedback e contatti</h2>
       <p>
         Se riscontri barriere di accessibilità o desideri segnalare un
-        problema, scrivici tramite la pagina{" "}
-        <Link href="/contatti">Contatti</Link> o all&apos;indirizzo{" "}
+        problema, scrivici all&apos;indirizzo{" "}
+        <a href="mailto:info@gausio.com">info@gausio.com</a> o a{" "}
         <a href="mailto:accessibilita@gausio.com">
           accessibilita@gausio.com
         </a>
