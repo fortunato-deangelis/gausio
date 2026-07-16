@@ -4,18 +4,40 @@ Steps to configure the ZITADEL instance so both apps work.
 
 ## 1. Create the OIDC application (Main App client)
 
-1. In your ZITADEL project, create a new **Application** of type **Web**.
-2. Authentication method: **PKCE** (Authorization Code + PKCE).
+In the ZITADEL Console: **Projects → (your project) → Applications → New**.
+
+1. Application type: **Web**.
+2. Authentication method: **Code** (confidential client with client secret;
+   ZITADEL calls it "Basic" / "Post" client authentication). Do **not** pick
+   the "PKCE" application type: that creates a *public* client **without a
+   client secret**, while the Main App requires `AUTH_ZITADEL_SECRET` to be set
+   (`isZitadelConfigured` is false without it). Auth.js still performs
+   Authorization Code **+ PKCE** on top of the confidential client.
 3. **Redirect URIs** — add the Auth.js callback for every environment:
-   - `http://localhost:3000/api/auth/callback/zitadel` (local)
+   - `http://localhost:3000/api/auth/callback/zitadel` (local; enable
+     "Development Mode" on the app to allow `http://` URIs)
    - `https://<your-domain>/api/auth/callback/zitadel` (prod)
 4. **Post logout redirect URIs** — add the Main App origins (exact, no
    wildcards):
    - `http://localhost:3000/`
    - `https://<your-domain>/`
-5. Copy the **Client ID** and **Client Secret** into the Main App env
-   (`AUTH_ZITADEL_ID`, `AUTH_ZITADEL_SECRET`) and set `AUTH_ZITADEL_ISSUER` to
-   your instance URL.
+5. Create the app: ZITADEL shows the **Client ID** and **Client Secret** once —
+   copy them immediately (the secret can be regenerated later from the app's
+   **Configuration** tab).
+
+### Where each env var comes from (Console → `.env`)
+
+| Env var | Where to find it in the ZITADEL Console |
+| ------- | --------------------------------------- |
+| `AUTH_ZITADEL_ISSUER` | Your instance domain, e.g. `https://<instance>.zitadel.cloud` (Console → **Instance → Domains**, or the "Issuer" in the app's **Urls** tab). No trailing slash, no path. |
+| `AUTH_ZITADEL_ID` | The application's **Client ID** (Application → **Configuration**). |
+| `AUTH_ZITADEL_SECRET` | The application's **Client Secret**, shown at creation or via **Regenerate Client Secret**. |
+| `ZITADEL_API_URL` (Login App) | Same instance domain as the issuer. |
+| `ZITADEL_SERVICE_USER_TOKEN` (Login App) | PAT of the machine user — see section 3. |
+
+You can verify the issuer by opening
+`https://<instance>/.well-known/openid-configuration` in a browser: it must
+return the discovery document.
 
 ## 2. Scopes & claims
 
@@ -28,17 +50,22 @@ Steps to configure the ZITADEL instance so both apps work.
 The Login App (ZITADEL Login UI v2) calls the ZITADEL API with a **service
 user**:
 
-1. Create a **Machine user**.
-2. Grant it the roles required by the Login UI (see the upstream docs for the
-   exact role set for your ZITADEL version).
-3. Generate a **Personal Access Token** and set it as
-   `ZITADEL_SERVICE_USER_TOKEN` in the Login App env, with `ZITADEL_API_URL`
-   pointing at your instance.
+1. Console → **Users → Service Users → New**: create a **Machine user**
+   (e.g. `login-client`).
+2. Grant it the **IAM_LOGIN_CLIENT** role (Console → **Instance → Managers →
+   Add manager**, pick the service user). Older ZITADEL versions may require a
+   different role set — check the upstream Login UI docs for your version.
+3. Open the service user → **Personal Access Tokens → New**: set an expiry and
+   copy the token once. Set it as `ZITADEL_SERVICE_USER_TOKEN` in the Login App
+   env, with `ZITADEL_API_URL` pointing at your instance.
 
-## 4. Custom login base URL (optional)
+## 4. Custom login base URL (target setup)
 
-To route interactive login through the self-hosted Login App instead of the
-hosted login:
+The goal of this integration is to serve the **login form from our own
+self-hosted Login App** (so its UI/UX can be customized), not ZITADEL's hosted
+login page. Until these steps are completed — including vendoring the upstream
+Login UI, see [UPSTREAM.md](../zitadel-login/UPSTREAM.md) — users still land on
+ZITADEL's hosted login:
 
 1. Deploy the Login App under a stable origin (e.g.
    `https://login.<your-domain>/ui/v2/login`).

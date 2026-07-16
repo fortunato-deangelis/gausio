@@ -56,7 +56,8 @@ sequenceDiagram
   the issuer, server-to-server.
 - The `id_token` is stored **only inside the encrypted Auth.js JWT** (httpOnly
   cookie) as `zitadelIdToken`. It is never placed in `session` and never sent to
-  the client. It is used solely as an optional `id_token_hint` for logout.
+  the client. It is kept available as a future `id_token_hint` for logout; the
+  current logout uses `client_id` (see below).
 
 ## Logout flow (federated)
 
@@ -68,15 +69,20 @@ sequenceDiagram
   participant Z as ZITADEL
 
   B->>M: POST signOut (server action)
-  M->>M: read zitadelIdToken from JWT (server-side)
-  M->>M: buildEndSessionUrl(id_token_hint?, post_logout_redirect_uri)
+  M->>M: buildEndSessionUrl(client_id, post_logout_redirect_uri)
   M->>B: clear session cookie + 302 -> end_session endpoint
-  B->>Z: GET end_session
+  B->>Z: GET end_session?client_id=...&post_logout_redirect_uri=...
   Z->>B: 302 -> post_logout_redirect_uri (Main App '/')
 ```
 
 - Local session is cleared **first** (Auth.js `signOut`), then the browser is
   sent to the ZITADEL `end_session_endpoint` for federated logout.
+- The end-session request uses **`client_id` + `post_logout_redirect_uri`**
+  (see `signOutAction` in `src/components/layout/actions.ts`). ZITADEL accepts
+  this combination as long as the redirect URI is registered.
+  `buildEndSessionUrl` also supports `id_token_hint` (which skips ZITADEL's
+  logout confirmation screen); wiring the stored `zitadelIdToken` into the
+  action is a possible future improvement.
 - `post_logout_redirect_uri` must be **registered** in the ZITADEL application
   configuration; wildcards are never used. See
   [ZITADEL_CONFIGURATION.md](./ZITADEL_CONFIGURATION.md).

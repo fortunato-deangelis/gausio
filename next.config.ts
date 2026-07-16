@@ -10,6 +10,8 @@ import type { NextConfig } from "next";
  *   Next.js inietta script/stili inline in fase di hydration. Per una CSP
  *   strict basata su nonce vedi docs/SECURITY.md.
  */
+const isDev = process.env.NODE_ENV === "development";
+
 const CONNECT_SRC = ["'self'", "https:"].join(" ");
 
 const CONTENT_SECURITY_POLICY = [
@@ -21,7 +23,8 @@ const CONTENT_SECURITY_POLICY = [
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // 'unsafe-eval' serve solo al runtime di sviluppo (React Refresh/Turbopack).
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   `connect-src ${CONNECT_SRC}`,
   "upgrade-insecure-requests",
 ].join("; ");
@@ -35,6 +38,16 @@ const SECURITY_HEADERS = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
   },
+  // HSTS solo in produzione: in locale (http) l'header verrebbe comunque
+  // ignorato dai browser, ma evitiamo di inviarlo per chiarezza.
+  ...(isDev
+    ? []
+    : [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]),
 ];
 
 const nextConfig: NextConfig = {

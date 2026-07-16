@@ -12,7 +12,6 @@ const SENSITIVE_KEY_PATTERNS = [
   "authorization",
   "cookie",
   "set-cookie",
-  "pat",
   "otp",
   "code",
   "client_secret",
@@ -25,10 +24,17 @@ const SENSITIVE_KEY_PATTERNS = [
   "private",
 ];
 
+/**
+ * Chiavi sensibili solo con match esatto: "pat" in match parziale
+ * oscurerebbe anche chiavi innocue e utili al debugging come "path".
+ */
+const SENSITIVE_KEY_EXACT = ["pat"];
+
 export const REDACTED = "[REDACTED]";
 
 export function isSensitiveKey(key: string): boolean {
   const lower = key.toLowerCase();
+  if (SENSITIVE_KEY_EXACT.includes(lower)) return true;
   return SENSITIVE_KEY_PATTERNS.some((pattern) => lower.includes(pattern));
 }
 

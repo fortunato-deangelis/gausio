@@ -16,6 +16,9 @@ test("isSensitiveKey riconosce chiavi sensibili", () => {
   }
   assert.equal(isSensitiveKey("email"), false);
   assert.equal(isSensitiveKey("name"), false);
+  // "pat" è sensibile solo come chiave esatta: "path" non va oscurato.
+  assert.equal(isSensitiveKey("path"), false);
+  assert.equal(isSensitiveKey("filePath"), false);
 });
 
 test("redactString oscura Bearer token e JWT", () => {

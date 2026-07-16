@@ -13,6 +13,9 @@ export async function GET() {
   const readiness = await getReadiness();
   return NextResponse.json(
     { status: readiness.status, checks: readiness.checks },
-    { status: readiness.status === "ok" ? 200 : 503 }
+    {
+      status: readiness.status === "ok" ? 200 : 503,
+      headers: { "cache-control": "no-store" },
+    }
   );
 }

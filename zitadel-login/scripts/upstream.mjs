@@ -20,7 +20,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const appDir = join(__dirname, "..");
@@ -94,10 +94,16 @@ function cmdVendor() {
   assertClean();
   ensureRemote(pin.repo);
   const sha = resolveRef(pin.ref);
-  const prefix = join(
-    appDir.replace(repoRoot() + "/", ""),
-    pin.vendorDir
-  );
+  // git subtree vuole un prefix relativo alla root del repo con separatori
+  // "/" anche su Windows (dove git rev-parse ritorna path con "/", mentre
+  // __dirname usa "\\"): normalizziamo entrambi prima di calcolare il prefix.
+  const prefix = [
+    relative(repoRoot().replaceAll("\\", "/"), appDir.replaceAll("\\", "/"))
+      .replaceAll("\\", "/"),
+    pin.vendorDir,
+  ]
+    .filter(Boolean)
+    .join("/");
   const vendorAbs = join(appDir, pin.vendorDir);
 
   const subtreeArgs = existsSync(vendorAbs)

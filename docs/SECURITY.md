@@ -5,7 +5,10 @@
 - **Session type:** stateless JWT in an httpOnly, SameSite cookie (Auth.js v5).
 - **No tokens to the client:** `session` exposes only the internal user id. The
   ZITADEL `id_token` is confined to the encrypted server-side JWT
-  (`zitadelIdToken`) and used only as an optional `id_token_hint` at logout.
+  (`zitadelIdToken`) and never sent to the client. It is kept so it can be used
+  as `id_token_hint` at logout in the future; the current logout implementation
+  uses `client_id` + a registered `post_logout_redirect_uri` instead (see
+  [APP_LOGIN_COMMUNICATION.md](./APP_LOGIN_COMMUNICATION.md)).
 - **PKCE:** Authorization Code Flow with PKCE is enforced by the provider.
 - **AUTH_SECRET:** required in every non-dev environment. Generate with
   `npx auth secret`. The dev-only credentials provider is gated behind
@@ -18,17 +21,19 @@ All post-login/post-logout redirects flow through
 
 - only **same-origin, path-relative** targets are allowed (must start with a
   single `/`);
-- protocol-relative (`//evil.com`), backslash tricks (`/\evil.com`), and
-  absolute URLs are rejected and replaced with a safe fallback (`/app`);
-- an optional allowlist of path prefixes can further restrict targets.
+- protocol-relative (`//evil.com`), backslash tricks (`/\evil.com`), control
+  characters (CRLF injection), and absolute URLs are rejected and replaced with
+  a safe fallback (`/app`);
+- absolute URLs are allowed only when their **origin** is in the allowlist
+  built from the known env vars (`buildAllowedOrigins`); no wildcards.
 
 Covered by unit tests in
 [`src/server/security/__tests__/redirect.test.ts`](../src/server/security/__tests__/redirect.test.ts).
 
 ## Log redaction
 
-[`redactSecrets`](../src/server/security/redact.ts) scrubs sensitive material
-before anything is logged:
+[`redact` / `redactString`](../src/server/security/redact.ts) scrub sensitive
+material before anything is logged:
 
 - known secret-ish keys (`token`, `secret`, `password`, `authorization`,
   `client_secret`, `id_token`, `access_token`, `code`, `cookie`, …) are masked
@@ -49,8 +54,11 @@ Set globally in [`next.config.ts`](../next.config.ts):
 | `Content-Security-Policy` | `frame-ancestors 'none'` | anti-clickjacking (modern) |
 | `X-Content-Type-Options` | `nosniff` | block MIME sniffing |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | limit referrer leakage |
-| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | force HTTPS (prod) |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | force HTTPS (production builds only) |
 | `Permissions-Policy` | restrictive | disable unused browser features |
+
+The CSP allows `'unsafe-eval'` only in development (React Refresh); production
+builds omit it.
 
 The Login App applies the same anti-framing headers in
 [`zitadel-login/next.config.mjs`](../zitadel-login/next.config.mjs).

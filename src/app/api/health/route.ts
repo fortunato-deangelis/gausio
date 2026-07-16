@@ -18,6 +18,9 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       checks: readiness.checks,
     },
-    { status: readiness.status === "ok" ? 200 : 503 }
+    {
+      status: readiness.status === "ok" ? 200 : 503,
+      headers: { "cache-control": "no-store" },
+    }
   );
 }
