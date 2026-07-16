@@ -15,6 +15,23 @@ type SignInPageContentProps = Readonly<{
   error?: string;
 }>;
 
+const signInErrorMessages: Record<string, string> = {
+  flow: "La sessione di accesso è scaduta o non è più valida. Riprova.",
+  "email-unverified":
+    "Prima di accedere devi verificare l'email del tuo account. Controlla la posta e riprova.",
+  AccessDenied:
+    "Accesso rifiutato. Verifica che l'email dell'account sia confermata e riprova.",
+  Configuration:
+    "Accesso non configurato correttamente. Contatta un amministratore.",
+  OAuthCallbackError:
+    "Non è stato possibile completare il rientro da Zitadel. Riprova.",
+};
+
+function signInErrorMessage(error: string | undefined): string | null {
+  if (!error) return null;
+  return signInErrorMessages[error] ?? "Non è stato possibile completare l'accesso. Riprova.";
+}
+
 export async function SignInPageContent({
   callbackUrl,
   authRequest,
@@ -33,6 +50,7 @@ export async function SignInPageContent({
   // aperta (redirect Login V2); il form la finalizzerà dopo il login.
   const validAuthRequest =
     authRequest && AUTH_REQUEST_ID_PATTERN.test(authRequest) ? authRequest : undefined;
+  const errorMessage = signInErrorMessage(error);
 
   return (
     <AuthPageShell
@@ -40,11 +58,9 @@ export async function SignInPageContent({
       description="Accedi alla tua azienda e riprendi il lavoro da dove lo avevi lasciato."
     >
       <div className="flex flex-col gap-6">
-        {error === "flow" && (
+        {errorMessage && (
           <Alert variant="destructive" role="alert">
-            <AlertDescription>
-              La sessione di accesso è scaduta o non è più valida. Riprova.
-            </AlertDescription>
+            <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
 

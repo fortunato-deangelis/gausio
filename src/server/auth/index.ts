@@ -31,10 +31,20 @@ async function syncUser(input: {
   });
 
   if (existing) {
+    const emailOwner = await db.query.users.findFirst({
+      where: eq(users.email, input.email),
+    });
+    const emailAvailable = !emailOwner || emailOwner.id === existing.id;
+    if (!emailAvailable) {
+      console.warn("[auth] email OIDC già presente su un altro utente locale", {
+        hasZitadelId: Boolean(existing.zitadelId),
+        emailOwnerHasZitadelId: Boolean(emailOwner.zitadelId),
+      });
+    }
     await db
       .update(users)
       .set({
-        email: input.email,
+        ...(emailAvailable ? { email: input.email } : {}),
         name: input.name ?? existing.name,
         image: input.image ?? existing.image,
         updatedAt: new Date(),
@@ -52,7 +62,12 @@ async function syncUser(input: {
     }
     await db
       .update(users)
-      .set({ zitadelId: input.zitadelId })
+      .set({
+        zitadelId: input.zitadelId,
+        name: input.name ?? byEmail.name,
+        image: input.image ?? byEmail.image,
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, byEmail.id));
     return byEmail.id;
   }
@@ -77,6 +92,15 @@ function verifiedProfileEmail(profile: Record<string, unknown>): string | null {
   return email && email.length <= 320 ? email : null;
 }
 
+function logRejectedProfile(profile: Record<string, unknown> | undefined): void {
+  console.warn("[auth] OIDC sign-in rifiutato", {
+    hasProfile: Boolean(profile),
+    hasSub: typeof profile?.sub === "string",
+    hasEmail: typeof profile?.email === "string",
+    emailVerified: profile?.email_verified === true,
+  });
+}
+
 /** Zitadel è attivo solo se configurato: con env vuote il provider
  * farebbe fallire ogni route di auth alla discovery OIDC. Il client
  * secret è opzionale: le app OIDC con Authentication Method "None"
@@ -89,15 +113,16 @@ const providers = [];
 
 if (isZitadelConfigured) {
   const clientSecret = process.env.AUTH_ZITADEL_SECRET;
-  providers.push(
-    Zitadel({
-      issuer: process.env.AUTH_ZITADEL_ISSUER,
-      clientId: process.env.AUTH_ZITADEL_ID,
-      ...(clientSecret
-        ? { clientSecret }
-        : { client: { token_endpoint_auth_method: "none" } }),
-    })
-  );
+  const zitadelProvider = Zitadel({
+    issuer: process.env.AUTH_ZITADEL_ISSUER,
+    clientId: process.env.AUTH_ZITADEL_ID,
+    ...(clientSecret
+      ? { clientSecret }
+      : { client: { token_endpoint_auth_method: "none" } }),
+  });
+  zitadelProvider.authorization = { params: { scope: "openid profile email" } };
+  zitadelProvider.idToken = false;
+  providers.push(zitadelProvider);
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -105,11 +130,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: {
     signIn: "/sign-in",
+    error: "/sign-in",
   },
   callbacks: {
     signIn({ account, profile }) {
       if (account?.provider !== "zitadel") return false;
-      return Boolean(profile && verifiedProfileEmail(profile));
+      if (profile && verifiedProfileEmail(profile)) return true;
+      logRejectedProfile(profile);
+      return "/sign-in?error=email-unverified";
     },
     async jwt({ token, account, profile }) {
       // Primo login OIDC: sincronizza l'utente su DB e memorizza l'id interno.
