@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/server/db";
 import { attachments } from "@/server/db/schema";
 import { getWorkspaceContext } from "@/server/workspace";
+import { authorizeAttachmentEntity } from "@/features/attachments/authorization";
 
 /** Download di un allegato del workspace attivo. */
 export async function GET(
@@ -21,19 +22,37 @@ export async function GET(
     ),
   });
   if (!row) return new Response("Non trovato", { status: 404 });
+  try {
+    await authorizeAttachmentEntity(row.entityType, row.entityId, "view");
+  } catch {
+    return new Response("Non trovato", { status: 404 });
+  }
 
-  const root = path.resolve(
-    process.cwd(),
+  const root = path.join(
+    /* turbopackIgnore: true */ process.cwd(),
     process.env.UPLOADS_DIR ?? "storage/uploads"
   );
   try {
-    const data = await readFile(path.join(root, row.storagePath));
+    const absolutePath = path.normalize(
+      path.join(/* turbopackIgnore: true */ root, row.storagePath)
+    );
+    if (!absolutePath.startsWith(`${root}${path.sep}`)) {
+      return new Response("File non disponibile", { status: 404 });
+    }
+    const data = await readFile(absolutePath);
+    const fallbackName =
+      row.fileName
+        .replace(/[^\x20-\x7e]+/g, "_")
+        .replace(/["\\]/g, "_")
+        .slice(0, 150) || "allegato";
+    const mimeType = /^[\w.+-]+\/[\w.+-]+$/.test(row.mimeType)
+      ? row.mimeType
+      : "application/octet-stream";
     return new Response(new Uint8Array(data), {
       headers: {
-        "Content-Type": row.mimeType,
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(
-          row.fileName
-        )}"`,
+        "Content-Type": mimeType,
+        "Content-Disposition": `attachment; filename="${fallbackName}"; filename*=UTF-8''${encodeURIComponent(row.fileName)}`,
+        "Cache-Control": "private, no-store",
       },
     });
   } catch {

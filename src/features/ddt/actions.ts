@@ -244,13 +244,6 @@ export async function generateDdtMovements(
     });
     if (!ddt) return fail(new Error("DDT non trovato."));
 
-    const already = await db.query.stockMovements.findFirst({
-      where: eq(stockMovements.ddtId, ddt.id),
-    });
-    if (already) {
-      return fail(new Error("I movimenti per questo DDT sono già stati generati."));
-    }
-
     const lines = await db.query.ddtLines.findMany({
       where: eq(ddtLines.ddtId, ddt.id),
     });
@@ -264,6 +257,17 @@ export async function generateDdtMovements(
     const type = ddt.direction === "issued" ? ("out" as const) : ("in" as const);
 
     const created = await db.transaction(async (tx) => {
+      // Serializza la generazione sul singolo DDT: due richieste concorrenti
+      // non possono creare due volte gli stessi movimenti.
+      await tx.execute(sql`select ${ddts.id} from ${ddts} where ${ddts.id} = ${ddt.id} for update`);
+      const already = await tx.query.stockMovements.findFirst({
+        where: eq(stockMovements.ddtId, ddt.id),
+        columns: { id: true },
+      });
+      if (already) {
+        throw new Error("I movimenti per questo DDT sono già stati generati.");
+      }
+
       let count = 0;
       for (const line of linkedLines) {
         const item = await tx.query.warehouseItems.findFirst({
@@ -293,13 +297,27 @@ export async function generateDdtMovements(
         });
 
         const delta = type === "in" ? line.quantity : `-${line.quantity}`;
-        await tx
+        const updated = await tx
           .update(warehouseItems)
           .set({
             quantity: sql`${warehouseItems.quantity} + ${delta}`,
             updatedAt: new Date(),
           })
-          .where(eq(warehouseItems.id, item.id));
+          .where(
+            and(
+              eq(warehouseItems.id, item.id),
+              eq(warehouseItems.workspaceId, ctx.workspace.id),
+              type === "out"
+                ? sql`${warehouseItems.quantity} >= ${line.quantity}`
+                : undefined
+            )
+          )
+          .returning({ id: warehouseItems.id });
+        if (updated.length === 0) {
+          throw new Error(
+            `Scorta insufficiente per "${item.name}": i movimenti non sono stati generati.`
+          );
+        }
         count += 1;
       }
       return count;

@@ -14,7 +14,7 @@ export type JobStatus = (typeof jobStatuses)[number];
 const optionalNumericString = z
   .string()
   .optional()
-  .refine((v) => !v || !Number.isNaN(Number(v)), "Valore numerico non valido.");
+  .refine((v) => !v || Number.isFinite(Number(v)), "Valore numerico non valido.");
 
 export const jobSchema = z.object({
   title: z.string().min(2, "Inserisci il titolo della commessa."),

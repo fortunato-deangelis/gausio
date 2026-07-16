@@ -230,13 +230,27 @@ export async function createMovement(
           .where(eq(warehouseItems.id, item.id));
       } else {
         const delta = parsed.type === "in" ? parsed.quantity : `-${parsed.quantity}`;
-        await tx
+        const updated = await tx
           .update(warehouseItems)
           .set({
             quantity: sql`${warehouseItems.quantity} + ${delta}`,
             updatedAt: new Date(),
           })
-          .where(eq(warehouseItems.id, item.id));
+          .where(
+            and(
+              eq(warehouseItems.id, item.id),
+              eq(warehouseItems.workspaceId, ctx.workspace.id),
+              parsed.type === "out"
+                ? sql`${warehouseItems.quantity} >= ${parsed.quantity}`
+                : undefined
+            )
+          )
+          .returning({ id: warehouseItems.id });
+        if (updated.length === 0) {
+          throw new Error(
+            `Scorta insufficiente per "${item.name}": il movimento non è stato registrato.`
+          );
+        }
       }
       return row.id;
     });
@@ -271,16 +285,34 @@ export async function deleteMovement(
     }
 
     await db.transaction(async (tx) => {
-      await tx.delete(stockMovements).where(eq(stockMovements.id, existing.id));
+      const [deleted] = await tx
+        .delete(stockMovements)
+        .where(
+          and(
+            eq(stockMovements.id, existing.id),
+            eq(stockMovements.workspaceId, ctx.workspace.id)
+          )
+        )
+        .returning({
+          type: stockMovements.type,
+          quantity: stockMovements.quantity,
+          itemId: stockMovements.itemId,
+        });
+      if (!deleted) throw new Error("Movimento già eliminato.");
       const delta =
-        existing.type === "in" ? `-${existing.quantity}` : existing.quantity;
+        deleted.type === "in" ? `-${deleted.quantity}` : deleted.quantity;
       await tx
         .update(warehouseItems)
         .set({
           quantity: sql`${warehouseItems.quantity} + ${delta}`,
           updatedAt: new Date(),
         })
-        .where(eq(warehouseItems.id, existing.itemId));
+        .where(
+          and(
+            eq(warehouseItems.id, deleted.itemId),
+            eq(warehouseItems.workspaceId, ctx.workspace.id)
+          )
+        );
     });
 
     revalidatePath("/app/magazzino");

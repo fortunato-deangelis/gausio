@@ -10,10 +10,19 @@ type SignUpPageProps = Readonly<{
   searchParams: Promise<{
     callbackUrl?: string;
     error?: string;
+    authRequest?: string;
+    login_hint?: string;
   }>;
 }>;
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   const params = await searchParams;
-  return <SignUpPageContent {...params} />;
+  return (
+    <SignUpPageContent
+      callbackUrl={params.callbackUrl}
+      error={params.error}
+      authRequest={params.authRequest}
+      loginHint={params.login_hint}
+    />
+  );
 }

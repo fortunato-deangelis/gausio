@@ -53,25 +53,27 @@ npm run dev
 | `AUTH_SECRET` | Segreto Auth.js (`npx auth secret`) |
 | `AUTH_URL` | URL pubblico dell'app |
 | `AUTH_ZITADEL_ISSUER` | Issuer dell'istanza Zitadel |
-| `AUTH_ZITADEL_ID` / `AUTH_ZITADEL_SECRET` | Credenziali dell'app OIDC |
-| `AUTH_DEV_LOGIN` | `true` per abilitare il login di sviluppo senza Zitadel |
+| `AUTH_ZITADEL_ID` | Client ID dell'app OIDC |
+| `AUTH_ZITADEL_SECRET` | Client Secret (solo auth method Basic/Post; vuoto con "None"/PKCE) |
+| `ZITADEL_SERVICE_USER_TOKEN` | PAT del login client (abilita la login UI custom) |
 | `UPLOADS_DIR` | Cartella degli allegati (default `storage/uploads`) |
 
-### Login di sviluppo
+### Autenticazione
 
-Con `AUTH_DEV_LOGIN=true` le pagine `/sign-in` e `/sign-up` mostrano form di
-sviluppo che creano l'utente al volo dall'email; la password richiesta dal form
-locale non viene persistita né verificata. È utile per provare l'app senza
-un'istanza Zitadel. **Non abilitarlo in produzione.**
+L'unica modalità di login è Zitadel (OIDC, code flow + PKCE). In locale si usa
+un'applicazione OIDC Zitadel dedicata allo sviluppo (stesse variabili, valori
+dell'app dev). Le pagine `/sign-in`, `/sign-up`, `/mfa`, `/forgot-password`,
+`/reset-password` e `/verify-email` sono una login UI completamente custom:
+form nell'app, verifica via Session/User API v2, l'utente non vede mai la UI
+hosted. Richiede tutte le variabili `AUTH_ZITADEL_*` più
+`ZITADEL_SERVICE_USER_TOKEN`; se mancano, le pagine mostrano un avviso di
+configurazione.
 
 ### Configurazione Zitadel
 
-1. Crea un progetto e un'applicazione **Web** (OIDC, Authorization Code + PKCE).
-2. Redirect URI: `https://<host>/api/auth/callback/zitadel`
-   (in dev: `http://localhost:3000/api/auth/callback/zitadel`).
-3. Copia issuer, client id e client secret nelle env.
-4. Nelle impostazioni del comportamento di login abilita la registrazione
-   self-service; per il recupero password lascia attiva l'opzione dedicata.
+Vedi `docs/ZITADEL_CONFIGURATION.md` per la procedura completa (app OIDC,
+service user con ruolo Instance Login Client + PAT, feature Login V2 con base
+URI verso l'app, trusted domain, SMTP).
 
 La pagina `/sign-up` apre la registrazione ospitata con il parametro OIDC
 `prompt=create`. `/forgot-password` continua invece nel flusso self-service di

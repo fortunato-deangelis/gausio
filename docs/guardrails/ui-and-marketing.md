@@ -83,10 +83,11 @@ questo documento, così il guardrail non rimane obsoleto.
 
 ## Accesso e autenticazione
 
-- `/sign-in`, `/sign-up` e `/forgot-password` sono rotte distinte, con form
-  indipendenti, e usano la stessa shell nel contenitore `w-full max-w-360` da
-  `1440px`. La direzione visiva resta quella della home: bianco, `#f5f5f7`,
-  superfici piatte, tipografia editoriale, spaziatura ampia e radius `2px`.
+- `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`,
+  `/verify-email` e `/mfa` sono rotte distinte, con form indipendenti, e
+  usano la stessa shell nel contenitore `w-full max-w-360` da `1440px`. La
+  direzione visiva resta quella della home: bianco, `#f5f5f7`, superfici
+  piatte, tipografia editoriale, spaziatura ampia e radius `2px`.
 - Su desktop ogni pagina è divisa in due colonne: visual editoriale a sinistra
   e il singolo form a destra. Su mobile il visual è nascosto e restano soltanto
   logo, form e copyright.
@@ -94,14 +95,24 @@ questo documento, così il guardrail non rimane obsoleto.
   background autonoma. In basso compare un footer minimale con copyright.
 - I visual auth sono asset DiceBear `notionists` CC0 salvati localmente sotto
   `public/auth`; non dipendere dall'API DiceBear durante il rendering.
-- I tre flussi si collegano con link testuali e non usano toggle o query string
-  per cambiare modalità. Il login di sviluppo mostra email e password; il
-  login reale, la registrazione e il reset restano delegati a Zitadel. La
-  registrazione apre il flusso con `prompt=create`, mentre il recupero usa il
-  self-service del login ospitato e riceve l'email come `login_hint`.
-- Nel form di accesso, subito sotto la password, `Ricordami` resta a sinistra e
-  il link al recupero password a destra su desktop. Registrazione e recupero
-  mostrano nello stesso punto i link incrociati verso gli altri flussi.
+- I flussi si collegano con link testuali e non usano toggle o query string
+  per cambiare modalità. Login, MFA, registrazione, verifica email e reset
+  password sono form custom dell'app, sempre visibili, che parlano con
+  ZITADEL solo tramite server actions (vedi `docs/ARCHITECTURE.md`);
+  l'utente non vede mai la UI hosted. Se la configurazione è incompleta le
+  pagine mostrano un avviso, mai un redirect verso ZITADEL. Non esiste un
+  login di sviluppo separato: in locale si usa un'app OIDC Zitadel dedicata
+  allo sviluppo. La registrazione chiede anche la conferma della password e
+  prosegue con l'inserimento del codice di verifica email su
+  `/verify-email` prima dell'onboarding.
+- Nel form di accesso custom, sotto la password, i link incrociati mostrano
+  la registrazione a sinistra e il recupero password a destra su desktop.
+  Registrazione e recupero mostrano nello stesso punto i link incrociati
+  verso gli altri flussi.
+- I codici OTP/MFA usano il primitivo `InputOTP` riesportato da
+  `@/components/shared`; gli errori dei flussi auth usano `Alert` con
+  `role="alert"` e messaggi applicativi statici (mai messaggi grezzi
+  dell'IdP).
 - Registrazione e onboarding richiedono l'accettazione esplicita di Termini e
   Privacy tramite lo switch rettangolare condiviso. I link a entrambe le pagine
   legali restano visibili nell'area form di ogni modalità.

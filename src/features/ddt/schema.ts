@@ -47,7 +47,7 @@ export const ddtLineSchema = z.object({
     .string()
     .min(1, "Inserisci la quantità.")
     .refine(
-      (v) => !Number.isNaN(Number(v)) && Number(v) > 0,
+      (v) => Number.isFinite(Number(v)) && Number(v) > 0,
       "La quantità deve essere maggiore di zero."
     ),
   unit: z.string().optional(),
@@ -80,7 +80,10 @@ export const ddtSchema = z.object({
   weight: z.string().optional(),
   destinationAddress: z.string().optional(),
   notes: z.string().optional(),
-  lines: z.array(ddtLineSchema).min(1, "Aggiungi almeno una riga."),
+  lines: z
+    .array(ddtLineSchema)
+    .min(1, "Aggiungi almeno una riga.")
+    .max(200, "Un DDT può contenere al massimo 200 righe."),
 });
 
 export type DdtInput = z.infer<typeof ddtSchema>;

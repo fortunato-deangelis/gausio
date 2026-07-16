@@ -9,12 +9,12 @@ const numericString = (message: string) =>
   z
     .string()
     .min(1, message)
-    .refine((v) => !Number.isNaN(Number(v)), message);
+    .refine((v) => Number.isFinite(Number(v)), message);
 
 const optionalNumericString = (message: string) =>
   z
     .string()
-    .refine((v) => v === "" || !Number.isNaN(Number(v)), message)
+    .refine((v) => v === "" || Number.isFinite(Number(v)), message)
     .optional();
 
 export const documentLineSchema = z.object({

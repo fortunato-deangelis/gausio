@@ -6,6 +6,10 @@ import { db } from "@/server/db";
 import { ddts, invoices, jobs, orders, workLogs } from "@/server/db/schema";
 import { requirePermission } from "@/server/workspace";
 import { nextDocumentNumber } from "@/server/numbering";
+import {
+  assertContactInWorkspace,
+  assertMemberInWorkspace,
+} from "@/server/tenant-references";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import {
   jobSchema,
@@ -35,6 +39,10 @@ export async function createJob(
   try {
     const ctx = await requirePermission("jobs", "create");
     const parsed = jobSchema.parse(input);
+    await Promise.all([
+      assertContactInWorkspace(ctx.workspace.id, parsed.clientId),
+      assertMemberInWorkspace(ctx.workspace.id, parsed.managerId),
+    ]);
     const { code, year, number } = await nextDocumentNumber(
       ctx.workspace.id,
       "job",
@@ -69,6 +77,10 @@ export async function updateJob(
       where: and(eq(jobs.id, id), eq(jobs.workspaceId, ctx.workspace.id)),
     });
     if (!existing) return fail(new Error("Commessa non trovata."));
+    await Promise.all([
+      assertContactInWorkspace(ctx.workspace.id, parsed.clientId),
+      assertMemberInWorkspace(ctx.workspace.id, parsed.managerId),
+    ]);
     await db
       .update(jobs)
       .set({ ...toRow(parsed), updatedAt: new Date() })

@@ -4,7 +4,7 @@ import type { StatusTone } from "@/components/shared";
 const optionalNumeric = (message: string) =>
   z
     .string()
-    .refine((v) => v === "" || !Number.isNaN(Number(v)), message)
+    .refine((v) => v === "" || Number.isFinite(Number(v)), message)
     .optional();
 
 export const itemSchema = z.object({
@@ -52,7 +52,7 @@ export const movementSchema = z.object({
     .string()
     .min(1, "Inserisci la quantità.")
     .refine(
-      (v) => !Number.isNaN(Number(v)) && Number(v) > 0,
+      (v) => Number.isFinite(Number(v)) && Number(v) > 0,
       "La quantità deve essere maggiore di zero."
     ),
   date: z.string().min(1, "Inserisci la data."),

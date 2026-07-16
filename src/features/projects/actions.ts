@@ -5,6 +5,11 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/server/db";
 import { projectTasks, projects } from "@/server/db/schema";
 import { requirePermission } from "@/server/workspace";
+import {
+  assertContactInWorkspace,
+  assertJobInWorkspace,
+  assertMemberInWorkspace,
+} from "@/server/tenant-references";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import {
   projectSchema,
@@ -41,6 +46,11 @@ export async function createProject(
   try {
     const ctx = await requirePermission("projects", "create");
     const parsed = projectSchema.parse(input);
+    await Promise.all([
+      assertContactInWorkspace(ctx.workspace.id, parsed.clientId),
+      assertJobInWorkspace(ctx.workspace.id, parsed.jobId),
+      assertMemberInWorkspace(ctx.workspace.id, parsed.managerId),
+    ]);
     const [row] = await db
       .insert(projects)
       .values({
@@ -65,6 +75,11 @@ export async function updateProject(
     const parsed = projectSchema.parse(input);
     const existing = await getOwnedProject(ctx.workspace.id, id);
     if (!existing) return fail(new Error("Progetto non trovato."));
+    await Promise.all([
+      assertContactInWorkspace(ctx.workspace.id, parsed.clientId),
+      assertJobInWorkspace(ctx.workspace.id, parsed.jobId),
+      assertMemberInWorkspace(ctx.workspace.id, parsed.managerId),
+    ]);
     await db
       .update(projects)
       .set({ ...toProjectRow(parsed), updatedAt: new Date() })
@@ -114,6 +129,7 @@ export async function createTask(
     const parsed = taskSchema.parse(input);
     const project = await getOwnedProject(ctx.workspace.id, projectId);
     if (!project) return fail(new Error("Progetto non trovato."));
+    await assertMemberInWorkspace(ctx.workspace.id, parsed.assigneeId);
     const [row] = await db
       .insert(projectTasks)
       .values({ ...toTaskRow(parsed), projectId, createdBy: ctx.userId })
@@ -144,6 +160,7 @@ export async function updateTask(
     const parsed = taskSchema.parse(input);
     const task = await getOwnedTask(ctx.workspace.id, taskId);
     if (!task) return fail(new Error("Attività non trovata."));
+    await assertMemberInWorkspace(ctx.workspace.id, parsed.assigneeId);
     await db
       .update(projectTasks)
       .set({ ...toTaskRow(parsed), updatedAt: new Date() })

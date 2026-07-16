@@ -55,7 +55,10 @@ export const invoiceSchema = z.object({
   paymentTerms: z.string().optional(),
   externalReference: z.string().optional(),
   notes: z.string().optional(),
-  lines: z.array(documentLineSchema).min(1, "Aggiungi almeno una riga."),
+  lines: z
+    .array(documentLineSchema)
+    .min(1, "Aggiungi almeno una riga.")
+    .max(200, "Un documento può contenere al massimo 200 righe."),
 });
 
 export type InvoiceInput = z.infer<typeof invoiceSchema>;

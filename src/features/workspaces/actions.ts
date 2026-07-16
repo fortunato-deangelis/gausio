@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { auth } from "@/server/auth";
@@ -21,6 +21,7 @@ import {
 } from "@/server/auth/permissions";
 import {
   ACTIVE_WORKSPACE_COOKIE,
+  can,
   getWorkspaceContext,
   requirePermission,
 } from "@/server/workspace";
@@ -46,6 +47,17 @@ function slugify(name: string): string {
       .replace(/^-+|-+$/g, "")
       .slice(0, 48) || "workspace"
   );
+}
+
+async function countWorkspaceAdmins(workspaceId: string): Promise<number> {
+  const [row] = await db
+    .select({ value: count() })
+    .from(workspaceMembers)
+    .innerJoin(roles, eq(roles.id, workspaceMembers.roleId))
+    .where(
+      and(eq(workspaceMembers.workspaceId, workspaceId), eq(roles.key, "admin"))
+    );
+  return row?.value ?? 0;
 }
 
 /**
@@ -130,6 +142,8 @@ export async function createWorkspace(
 
     const cookieStore = await cookies();
     cookieStore.set(ACTIVE_WORKSPACE_COOKIE, workspaceId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 365,
@@ -159,6 +173,8 @@ export async function switchWorkspace(
 
     const cookieStore = await cookies();
     cookieStore.set(ACTIVE_WORKSPACE_COOKIE, workspaceId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 365,
@@ -244,6 +260,8 @@ export async function acceptInvitation(
   try {
     const session = await auth();
     if (!session?.user?.id) return fail(new Error("Non autenticato."));
+    const sessionEmail = session.user.email?.trim().toLowerCase();
+    if (!sessionEmail) return fail(new Error("Invito non valido."));
 
     const invitation = await db.query.workspaceInvitations.findFirst({
       where: eq(workspaceInvitations.token, token),
@@ -253,6 +271,9 @@ export async function acceptInvitation(
     }
     if (invitation.expiresAt < new Date()) {
       return fail(new Error("Invito scaduto."));
+    }
+    if (invitation.email.trim().toLowerCase() !== sessionEmail) {
+      return fail(new Error("Questo invito è destinato a un altro account."));
     }
 
     const existing = await db.query.workspaceMembers.findFirst({
@@ -275,6 +296,8 @@ export async function acceptInvitation(
 
     const cookieStore = await cookies();
     cookieStore.set(ACTIVE_WORKSPACE_COOKIE, invitation.workspaceId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       path: "/",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 365,
@@ -305,6 +328,19 @@ export async function updateMemberRole(
       where: and(eq(roles.id, roleId), eq(roles.workspaceId, ctx.workspace.id)),
     });
     if (!role) return fail(new Error("Ruolo non valido."));
+    const currentRole = await db.query.roles.findFirst({
+      where: and(
+        eq(roles.id, member.roleId),
+        eq(roles.workspaceId, ctx.workspace.id)
+      ),
+    });
+    if (
+      currentRole?.key === "admin" &&
+      role.key !== "admin" &&
+      (await countWorkspaceAdmins(ctx.workspace.id)) <= 1
+    ) {
+      return fail(new Error("Il workspace deve mantenere almeno un amministratore."));
+    }
 
     await db
       .update(workspaceMembers)
@@ -332,6 +368,18 @@ export async function removeMember(
     if (!member) return fail(new Error("Membro non trovato."));
     if (member.userId === ctx.userId) {
       return fail(new Error("Non puoi rimuovere te stesso."));
+    }
+    const memberRole = await db.query.roles.findFirst({
+      where: and(
+        eq(roles.id, member.roleId),
+        eq(roles.workspaceId, ctx.workspace.id)
+      ),
+    });
+    if (
+      memberRole?.key === "admin" &&
+      (await countWorkspaceAdmins(ctx.workspace.id)) <= 1
+    ) {
+      return fail(new Error("Il workspace deve mantenere almeno un amministratore."));
     }
     await db.delete(workspaceMembers).where(eq(workspaceMembers.id, memberId));
     revalidatePath("/app/impostazioni/membri");
@@ -388,7 +436,7 @@ export async function listRoles(): Promise<
   { id: string; key: string; name: string; isSystem: boolean }[]
 > {
   const ctx = await getWorkspaceContext();
-  if (!ctx) return [];
+  if (!ctx || !can(ctx, "settings", "view")) return [];
   const rows = await db.query.roles.findMany({
     where: eq(roles.workspaceId, ctx.workspace.id),
   });

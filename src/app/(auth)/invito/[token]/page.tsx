@@ -37,6 +37,8 @@ export default async function InvitoPage({
   const isValid =
     invitation &&
     workspace &&
+    invitation.email.trim().toLowerCase() ===
+      session.user.email?.trim().toLowerCase() &&
     invitation.status === "pending" &&
     invitation.expiresAt > new Date();
 

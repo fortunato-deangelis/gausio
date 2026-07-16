@@ -93,8 +93,13 @@ Pubbliche (group `(public)`, layout con navbar/footer/cookie banner):
 `/preferenza-cookie`. La vecchia `/preferenze-cookie` reindirizza alla rotta
 canonica singolare.
 
-Auth: `/sign-in`, `/sign-up`, `/forgot-password`, `/onboarding`,
-`/invito/[token]`.
+Auth: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`,
+`/verify-email`, `/mfa`, `/onboarding`, `/invito/[token]`. Le pagine sono
+una login UI custom form-first (Session API v2 + OIDC Service v2 via
+`src/server/zitadel/*`; l'handshake OIDC parte dopo l'autenticazione, entry
+point `/api/login` per la feature Login V2). Richiede `AUTH_ZITADEL_*` +
+`ZITADEL_SERVICE_USER_TOKEN`. Vedi `docs/ARCHITECTURE.md` e
+`docs/AUTH_FLOW.md`.
 
 App (group `(app)`, prefisso `/app`, protetto, layout con sidebar Vuexy):
 - `/app` dashboard per ruolo
@@ -147,5 +152,5 @@ montare `ExportMenu({ pdfUrl, xlsxUrl })`.
 
 - `npm run dev` / `npm run build` / `npm run lint`
 - `npx drizzle-kit generate` (nuova migrazione), `npx drizzle-kit migrate`
-- Env: vedi `.env.example` (Postgres, Zitadel; `AUTH_DEV_LOGIN=true` abilita
-  il login di sviluppo senza Zitadel).
+- Env: vedi `.env.example` (Postgres, Zitadel). L'unica modalità di login è
+  Zitadel: in locale si usa un'applicazione OIDC dedicata allo sviluppo.

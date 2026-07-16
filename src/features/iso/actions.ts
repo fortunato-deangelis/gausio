@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/server/db";
 import { isoDocumentRevisions, isoDocuments } from "@/server/db/schema";
 import { assertSameWorkspace, requirePermission } from "@/server/workspace";
+import { assertMemberInWorkspace } from "@/server/tenant-references";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { isoDocumentSchema, type IsoDocumentInput } from "./schema";
 
@@ -33,6 +34,7 @@ export async function createIsoDocument(
   try {
     const ctx = await requirePermission("iso", "create");
     const parsed = isoDocumentSchema.parse(input);
+    await assertMemberInWorkspace(ctx.workspace.id, parsed.ownerId);
 
     const duplicate = await db.query.isoDocuments.findFirst({
       where: and(
@@ -74,6 +76,7 @@ export async function updateIsoDocument(
     });
     if (!existing) return fail(new Error("Documento non trovato."));
     assertSameWorkspace(ctx, existing.workspaceId);
+    await assertMemberInWorkspace(ctx.workspace.id, parsed.ownerId);
 
     const contentChanged = (existing.content ?? "") !== (parsed.content ?? "");
     if (contentChanged && !parsed.changeDescription?.trim()) {

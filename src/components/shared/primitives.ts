@@ -123,4 +123,10 @@ export {
 } from "@/components/ui/chart";
 export { Toaster } from "@/components/ui/sonner";
 export { Kbd, KbdGroup } from "@/components/ui/kbd";
+export {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 export { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";

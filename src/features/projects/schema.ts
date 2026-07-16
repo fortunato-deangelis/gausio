@@ -19,7 +19,7 @@ export type TaskPriority = (typeof taskPriorities)[number];
 const optionalNumericString = z
   .string()
   .optional()
-  .refine((v) => !v || !Number.isNaN(Number(v)), "Valore numerico non valido.");
+  .refine((v) => !v || Number.isFinite(Number(v)), "Valore numerico non valido.");
 
 export const projectSchema = z.object({
   name: z.string().min(2, "Inserisci il nome del progetto."),

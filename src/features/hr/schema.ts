@@ -13,7 +13,7 @@ const optionalDecimal = z
   .string()
   .optional()
   .refine(
-    (v) => !v || !Number.isNaN(Number(v.replace(",", "."))),
+    (v) => !v || Number.isFinite(Number(v.replace(",", "."))),
     "Inserisci un numero valido."
   );
 
@@ -124,7 +124,10 @@ export const workLogSchema = z.object({
     .string()
     .min(1, "Le ore sono obbligatorie.")
     .refine(
-      (v) => Number(v.replace(",", ".")) > 0,
+      (v) => {
+        const value = Number(v.replace(",", "."));
+        return Number.isFinite(value) && value > 0;
+      },
       "Le ore devono essere maggiori di zero."
     ),
   description: z.string().optional(),

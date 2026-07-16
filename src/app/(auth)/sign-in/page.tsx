@@ -11,6 +11,9 @@ type SignInPageProps = Readonly<{
   searchParams: Promise<{
     callbackUrl?: string;
     mode?: string;
+    authRequest?: string;
+    login_hint?: string;
+    error?: string;
   }>;
 }>;
 
@@ -24,5 +27,12 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     redirect(`${path}${query}`);
   }
 
-  return <SignInPageContent callbackUrl={params.callbackUrl} />;
+  return (
+    <SignInPageContent
+      callbackUrl={params.callbackUrl}
+      authRequest={params.authRequest}
+      loginHint={params.login_hint}
+      error={params.error}
+    />
+  );
 }
