@@ -93,7 +93,8 @@ Pubbliche (group `(public)`, layout con navbar/footer/cookie banner):
 `/preferenza-cookie`. La vecchia `/preferenze-cookie` reindirizza alla rotta
 canonica singolare.
 
-Auth: `/sign-in`, `/onboarding`, `/invito/[token]`.
+Auth: `/sign-in`, `/sign-up`, `/forgot-password`, `/onboarding`,
+`/invito/[token]`.
 
 App (group `(app)`, prefisso `/app`, protetto, layout con sidebar Vuexy):
 - `/app` dashboard per ruolo

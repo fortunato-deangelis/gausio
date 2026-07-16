@@ -45,6 +45,9 @@ questo documento, così il guardrail non rimane obsoleto.
   standard misurano `40px` in altezza, usano testo `text-base` e radius `2px`.
   Le textarea mantengono l'altezza necessaria al contenuto, ma condividono
   `text-base` e radius `2px`.
+- Input, textarea, checkbox, radio, switch, select, combobox e controlli OTP
+  usano nello stato normale un bordo solido da `1px` con il token `border`.
+  Focus, errore e selezione possono sostituire il colore per comunicare lo stato.
 - Le icone chevron dei trigger select, combobox e multiselect misurano
   `18px × 18px`.
 - Le opzioni interne di select, combobox/multiselect e dropdown hanno altezza
@@ -80,19 +83,25 @@ questo documento, così il guardrail non rimane obsoleto.
 
 ## Accesso e autenticazione
 
-- `/sign-in` usa il contenitore `w-full max-w-360` da `1440px` e la stessa
-  direzione visiva della home: bianco, `#f5f5f7`, superfici piatte, tipografia
-  editoriale, spaziatura ampia e radius `2px`.
-- Su desktop la pagina è divisa in due colonne: visual editoriale a sinistra e
-  flussi `Accedi`, `Registrati`, `Recupera` a destra. Su mobile il visual è
-  nascosto e restano soltanto logo, form e copyright.
+- `/sign-in`, `/sign-up` e `/forgot-password` sono rotte distinte, con form
+  indipendenti, e usano la stessa shell nel contenitore `w-full max-w-360` da
+  `1440px`. La direzione visiva resta quella della home: bianco, `#f5f5f7`,
+  superfici piatte, tipografia editoriale, spaziatura ampia e radius `2px`.
+- Su desktop ogni pagina è divisa in due colonne: visual editoriale a sinistra
+  e il singolo form a destra. Su mobile il visual è nascosto e restano soltanto
+  logo, form e copyright.
 - `BrandLogo` resta sempre in alto su una testata trasparente, senza fascia di
   background autonoma. In basso compare un footer minimale con copyright.
 - I visual auth sono asset DiceBear `notionists` CC0 salvati localmente sotto
   `public/auth`; non dipendere dall'API DiceBear durante il rendering.
-- Le tre modalità usano il toggle group condiviso. Login, registrazione e reset
-  restano delegati a Zitadel: la registrazione apre il flusso con
-  `prompt=create`, mentre il recupero usa il self-service del login ospitato.
+- I tre flussi si collegano con link testuali e non usano toggle o query string
+  per cambiare modalità. Il login di sviluppo mostra email e password; il
+  login reale, la registrazione e il reset restano delegati a Zitadel. La
+  registrazione apre il flusso con `prompt=create`, mentre il recupero usa il
+  self-service del login ospitato e riceve l'email come `login_hint`.
+- Nel form di accesso, subito sotto la password, `Ricordami` resta a sinistra e
+  il link al recupero password a destra su desktop. Registrazione e recupero
+  mostrano nello stesso punto i link incrociati verso gli altri flussi.
 - Registrazione e onboarding richiedono l'accettazione esplicita di Termini e
   Privacy tramite lo switch rettangolare condiviso. I link a entrambe le pagine
   legali restano visibili nell'area form di ogni modalità.

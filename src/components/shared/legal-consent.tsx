@@ -18,6 +18,7 @@ type LegalConsentProps = Readonly<{
   description?: ReactNode;
   error?: string;
   className?: string;
+  labelClassName?: string;
 }>;
 
 /** Consenso legale riutilizzabile con lo switch rettangolare condiviso. */
@@ -32,6 +33,7 @@ export function LegalConsent({
   description,
   error,
   className,
+  labelClassName,
 }: LegalConsentProps) {
   const descriptionId = description ? `${id}-description` : undefined;
   const errorId = error ? `${id}-error` : undefined;
@@ -57,7 +59,7 @@ export function LegalConsent({
         className="mt-0.5"
       />
       <div className="flex min-w-0 flex-col gap-2">
-        <Label htmlFor={id} className="block cursor-pointer text-base leading-relaxed">
+        <Label htmlFor={id} className={cn("block cursor-pointer leading-relaxed", labelClassName)}>
           Accetto i{" "}
           <Link
             href="/termini-e-condizioni"

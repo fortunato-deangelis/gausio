@@ -5,6 +5,8 @@ const privatePaths = [
   "/app",
   "/api",
   "/sign-in",
+  "/sign-up",
+  "/forgot-password",
   "/onboarding",
   "/invito",
   "/preferenze-cookie",

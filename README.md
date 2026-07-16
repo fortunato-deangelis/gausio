@@ -59,9 +59,10 @@ npm run dev
 
 ### Login di sviluppo
 
-Con `AUTH_DEV_LOGIN=true` la pagina di accesso mostra un form "Login di
-sviluppo" che crea l'utente al volo dalla sola email: utile per provare
-l'app senza un'istanza Zitadel. **Non abilitarlo in produzione.**
+Con `AUTH_DEV_LOGIN=true` le pagine `/sign-in` e `/sign-up` mostrano form di
+sviluppo che creano l'utente al volo dall'email; la password richiesta dal form
+locale non viene persistita né verificata. È utile per provare l'app senza
+un'istanza Zitadel. **Non abilitarlo in produzione.**
 
 ### Configurazione Zitadel
 
@@ -72,9 +73,9 @@ l'app senza un'istanza Zitadel. **Non abilitarlo in produzione.**
 4. Nelle impostazioni del comportamento di login abilita la registrazione
    self-service; per il recupero password lascia attiva l'opzione dedicata.
 
-La pagina `/sign-in` apre la registrazione ospitata con il parametro OIDC
-`prompt=create`. Il recupero password continua invece nel flusso self-service
-di Zitadel, così l'applicazione non gestisce direttamente le credenziali.
+La pagina `/sign-up` apre la registrazione ospitata con il parametro OIDC
+`prompt=create`. `/forgot-password` continua invece nel flusso self-service di
+Zitadel, così l'applicazione non gestisce direttamente le credenziali.
 
 ## Architettura
 
