@@ -12,6 +12,7 @@ export * from "./brand-logo";
 export * from "./confirm-dialog";
 export * from "./data-table";
 export * from "./detail-list";
+export * from "./dismissible-alert";
 export * from "./empty-state";
 export * from "./entity-select";
 export * from "./export-menu";

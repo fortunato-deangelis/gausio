@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Alert, AlertDescription } from "@/components/shared";
+import { DismissibleAlert } from "@/components/shared";
 import { auth } from "@/server/auth";
 import { isCustomLoginEnabled } from "@/server/zitadel/config";
 import { AUTH_REQUEST_ID_PATTERN } from "../schema";
@@ -59,18 +59,16 @@ export async function SignInPageContent({
     >
       <div className="flex flex-col gap-6">
         {errorMessage && (
-          <Alert variant="destructive" role="alert">
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
+          <DismissibleAlert variant="destructive" role="alert">
+            {errorMessage}
+          </DismissibleAlert>
         )}
 
         {!configured && (
-          <Alert variant="destructive" role="alert">
-            <AlertDescription>
-              Accesso non configurato: servono AUTH_ZITADEL_* e
-              ZITADEL_SERVICE_USER_TOKEN. Vedi docs/ZITADEL_CONFIGURATION.md.
-            </AlertDescription>
-          </Alert>
+          <DismissibleAlert variant="destructive" role="alert">
+            Accesso non configurato: servono AUTH_ZITADEL_* e
+            ZITADEL_SERVICE_USER_TOKEN. Vedi docs/ZITADEL_CONFIGURATION.md.
+          </DismissibleAlert>
         )}
 
         <PasswordLoginForm
