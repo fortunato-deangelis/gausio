@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AuthHistoryGuard } from "./auth-history-guard";
 import { AppSidebar } from "./app-sidebar";
 import { AppTopbar } from "./app-topbar";
 import type { ShellContext } from "./types";
@@ -11,6 +12,7 @@ export function AppShell({
 }: Readonly<{ ctx: ShellContext; children: ReactNode }>) {
   return (
     <SidebarProvider>
+      <AuthHistoryGuard />
       <AppSidebar ctx={ctx} />
       <SidebarInset>
         <AppTopbar ctx={ctx} />

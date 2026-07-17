@@ -8,6 +8,11 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 
 const PROTECTED_PREFIXES = ["/app", "/onboarding"];
+const NO_STORE_HEADERS = {
+  "Cache-Control": "private, no-store, max-age=0, must-revalidate",
+  Expires: "0",
+  Pragma: "no-cache",
+};
 
 function hasSessionCookie(request: NextRequest): boolean {
   return (
@@ -24,9 +29,19 @@ export default function proxy(request: NextRequest) {
   if (isProtected && !hasSessionCookie(request)) {
     const signIn = new URL("/sign-in", request.url);
     signIn.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(signIn);
+    const response = NextResponse.redirect(signIn);
+    for (const [name, value] of Object.entries(NO_STORE_HEADERS)) {
+      response.headers.set(name, value);
+    }
+    return response;
   }
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (isProtected) {
+    for (const [name, value] of Object.entries(NO_STORE_HEADERS)) {
+      response.headers.set(name, value);
+    }
+  }
+  return response;
 }
 
 export const config = {

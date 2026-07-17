@@ -151,8 +151,9 @@ con `verificationCode`.
 
 Server action: legge `idToken` (salvato nel JWT Auth.js al login) e lo
 `sid`/sessionId ZITADEL, esegue `signOut` Auth.js (pulizia cookie), poi 302 a
-`{issuer}/oidc/v1/end_session?id_token_hint=…&post_logout_redirect_uri=…`
-(URI registrata sull'app OIDC). Il fallback senza `idToken` resta il logout
+`{issuer}/oidc/v1/end_session?id_token_hint=…&client_id=…&post_logout_redirect_uri=…`
+(URI registrata sull'app OIDC; default `AUTH_URL`, override
+`AUTH_POST_LOGOUT_REDIRECT_URI`). Il fallback senza `idToken` resta il logout
 locale con redirect alla landing.
 
 ## 5. Sicurezza

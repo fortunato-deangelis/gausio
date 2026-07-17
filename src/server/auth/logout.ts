@@ -29,13 +29,29 @@ export async function getIdTokenForLogout(): Promise<string | null> {
   }
 }
 
-/** URL OIDC end_session; null se l'issuer non è configurato. */
+function configuredPostLogoutRedirectUri(): string | null {
+  const value =
+    process.env.AUTH_POST_LOGOUT_REDIRECT_URI?.trim() ||
+    process.env.AUTH_URL?.trim();
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return value.split("#")[0]?.split("?")[0] || null;
+  } catch {
+    return null;
+  }
+}
+
+/** URL OIDC end_session; null se issuer/client/redirect non sono configurati. */
 export function buildEndSessionUrl(idToken: string): string | null {
   const issuer = process.env.AUTH_ZITADEL_ISSUER;
-  const appUrl = process.env.AUTH_URL;
-  if (!issuer || !appUrl) return null;
+  const clientId = process.env.AUTH_ZITADEL_ID;
+  const postLogoutRedirectUri = configuredPostLogoutRedirectUri();
+  if (!issuer || !clientId || !postLogoutRedirectUri) return null;
   const url = new URL("/oidc/v1/end_session", issuer);
   url.searchParams.set("id_token_hint", idToken);
-  url.searchParams.set("post_logout_redirect_uri", new URL("/", appUrl).toString());
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
   return url.toString();
 }

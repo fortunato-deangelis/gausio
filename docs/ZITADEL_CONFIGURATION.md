@@ -25,7 +25,9 @@ Nel progetto crea un'applicazione **Web**:
 - **Redirect URI**: `https://app.example.com/api/auth/callback/zitadel`
   (in sviluppo `http://localhost:3000/api/auth/callback/zitadel`, con
   «Dev Mode» attivo per consentire http).
-- **Post-logout redirect URI**: `https://app.example.com/`.
+- **Post-logout redirect URI**: `https://app.example.com`
+  (in sviluppo `http://localhost:3000/sign-in`). Deve combaciare esattamente con
+  `AUTH_POST_LOGOUT_REDIRECT_URI` se impostata, altrimenti con `AUTH_URL`.
 - Scope usati: `openid profile email` (default provider Auth.js).
 
 Annota il **Client ID** → `AUTH_ZITADEL_ID` (e il **Client Secret** →

@@ -187,7 +187,7 @@ sequenceDiagram
   App->>B: 302 {issuer}/oidc/v1/end_session?id_token_hint&post_logout_redirect_uri
   B->>Z: GET /oidc/v1/end_session
   Note over Z: termina la sessione ZITADEL<br/>(nessuna interazione: id_token_hint presente)
-  Z->>B: 302 {app}/ (post_logout_redirect_uri registrata)
+  Z->>B: 302 {app} (post_logout_redirect_uri registrata)
 ```
 
 Se l'`id_token` non è disponibile il logout resta locale con redirect

@@ -16,6 +16,7 @@ login custom attiva.
 | --- | --- | --- | --- | --- |
 | `AUTH_SECRET` | sì | Firma/cifra il JWT di sessione Auth.js **e** deriva (HKDF) la chiave AES-256-GCM del cookie di flusso login | stringa casuale ≥32 byte | `npx auth secret` |
 | `AUTH_URL` | sì | URL pubblico dell'app: base per redirect OIDC, urlTemplate email, RP ID WebAuthn, post-logout | `https://app.example.com` | Dominio di deploy |
+| `AUTH_POST_LOGOUT_REDIRECT_URI` | no | URI post-logout registrata in ZITADEL; se vuota usa `AUTH_URL` esattamente come configurato | `https://app.example.com` | Console ZITADEL → app OIDC → Post Logout URIs |
 
 ## ZITADEL — OIDC (Auth.js)
 
