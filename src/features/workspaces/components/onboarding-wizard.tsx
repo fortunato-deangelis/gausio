@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/shared/toast";
 import {
@@ -10,14 +10,12 @@ import {
   ArrowRight,
   Building2,
   Check,
-  ChevronRight,
   ClipboardCheck,
   Target,
 } from "lucide-react";
 import {
   AppCard,
   Button,
-  DetailList,
   FormError,
   FormGrid,
   LegalConsent,
@@ -65,16 +63,28 @@ const STEPS = [
   {
     title: "La tua azienda",
     subtitle: "Esigenze e dimensioni",
+    eyebrow: "Questionario",
+    heading: "Raccontaci cosa deve semplificare Gausio",
+    description:
+      "A destra trovi le domande essenziali per preparare un workspace coerente con dimensione, settore e priorità operative.",
     icon: Target,
   },
   {
     title: "Profilo aziendale",
     subtitle: "Dati e contatti",
+    eyebrow: "Anagrafica",
+    heading: "Completa il profilo della tua azienda",
+    description:
+      "Questi dati iniziali verranno usati nelle schermate operative e nei documenti aziendali. Potrai completarli o modificarli anche dopo.",
     icon: Building2,
   },
   {
     title: "Riepilogo",
     subtitle: "Controlla e crea",
+    eyebrow: "Conferma",
+    heading: "Controlla il percorso di configurazione",
+    description:
+      "La timeline riassume quanto hai impostato finora. Se tutto torna, crea il workspace e passa alla dashboard.",
     icon: ClipboardCheck,
   },
 ] as const;
@@ -100,8 +110,14 @@ function labelOf(options: { value: string; label: string }[], value?: string) {
   return options.find((o) => o.value === value)?.label ?? "—";
 }
 
+type OnboardingWizardProps = Readonly<{
+  isAdditionalWorkspace?: boolean;
+}>;
+
 /** Wizard di onboarding: questionario, profilo aziendale, riepilogo. */
-export function OnboardingWizard() {
+export function OnboardingWizard({
+  isAdditionalWorkspace = false,
+}: OnboardingWizardProps) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -145,215 +161,293 @@ export function OnboardingWizard() {
     }
   });
 
-  const values = form.watch();
+  const values = useWatch({ control: form.control });
+  const currentStep = STEPS[step];
+  const CurrentIcon = currentStep.icon;
+  const primaryCta =
+    step < STEPS.length - 1
+      ? "Continua"
+      : form.formState.isSubmitting
+        ? "Creazione in corso"
+        : "Crea workspace";
 
   return (
-    <AppCard className="w-full rounded-[2px] bg-white shadow-sm">
-      {/* Indicatore di step */}
-      <ol
-        className="mb-8 flex flex-col gap-3 border-b border-black/10 pb-6 sm:flex-row sm:items-center sm:gap-4"
-        aria-label="Avanzamento"
+    <AppCard
+      className="w-full rounded-[2px] bg-white py-0 shadow-sm"
+      contentClassName="p-0"
+    >
+      <form
+        onSubmit={onSubmit}
+        noValidate
+        className="grid min-h-155 lg:grid-cols-[minmax(300px,0.60fr)_minmax(0,1fr)]"
       >
-        {STEPS.map(({ title, subtitle, icon: Icon }, index) => {
-          const state =
-            index < step
-              ? "completed"
-              : index === step
-                ? "current"
-                : "upcoming";
-
-          return (
-            <li
-              key={title}
-              data-state={state}
-              className="flex min-w-0 flex-1 items-center gap-3"
-              aria-current={index === step ? "step" : undefined}
-            >
-              <span
-                className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-[2px] border transition-colors",
-                  index < step
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : index === step
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-muted text-muted-foreground"
-                )}
+        <aside className="flex min-h-105 flex-col justify-between gap-10 bg-[#f4f4f4] px-7 py-8 sm:px-10 lg:px-12 lg:py-12">
+          <div>
+            {step > 0 ? (
+              <button
+                type="button"
+                onClick={() => setStep((s) => Math.max(s - 1, 0))}
+                disabled={form.formState.isSubmitting}
+                className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary disabled:pointer-events-none disabled:opacity-50"
               >
-                {index < step ? (
-                  <Check aria-hidden className="size-5" />
-                ) : (
-                  <Icon aria-hidden className="size-5" />
-                )}
-              </span>
-              <span className="flex min-w-0 flex-col gap-1">
+                <ArrowLeft aria-hidden className="size-4" />
+                Indietro
+              </button>
+            ) : (
+              <div className="mb-5 h-5" aria-hidden />
+            )}
+
+            <div className="mb-8 flex size-12 items-center justify-center rounded-[2px] bg-primary text-primary-foreground">
+              <CurrentIcon aria-hidden className="size-6" />
+            </div>
+            <p className="text-sm font-semibold text-primary">
+              {isAdditionalWorkspace ? "Nuovo workspace" : currentStep.eyebrow}
+            </p>
+            <h1 className="mt-3 max-w-96 text-4xl font-bold leading-tight text-balance sm:text-5xl lg:text-6xl">
+              {isAdditionalWorkspace && step === 0
+                ? "Crea un nuovo workspace"
+                : currentStep.heading}
+            </h1>
+            <p className="mt-5 max-w-88 text-base leading-7 text-muted-foreground">
+              {isAdditionalWorkspace && step === 0
+                ? "Stai creando un workspace aggiuntivo: sarai amministratore anche di questo."
+                : currentStep.description}
+            </p>
+          </div>
+
+          <div className="space-y-5">
+            <FormError message={error} />
+            {step < STEPS.length - 1 ? (
+              <Button
+                key="continue"
+                type="button"
+                size="lg"
+                onClick={(event) => {
+                  event.preventDefault();
+                  void next();
+                }}
+                className="w-full"
+              >
+                {primaryCta}
+                <ArrowRight aria-hidden className="size-4.5" />
+              </Button>
+            ) : (
+              <Button
+                key="submit"
+                type="submit"
+                size="lg"
+                disabled={form.formState.isSubmitting}
+                className="w-full"
+              >
+                {form.formState.isSubmitting && <Spinner className="size-4" />}
+                {primaryCta}
+              </Button>
+            )}
+            <div
+              className="flex items-center justify-center gap-2"
+              aria-label="Avanzamento onboarding"
+            >
+              {STEPS.map(({ title }, index) => (
                 <span
+                  key={title}
                   className={cn(
-                    "truncate text-base font-bold",
+                    "h-2 rounded-full transition-all",
                     index === step
-                      ? "text-primary"
-                      : index < step
-                        ? "text-foreground"
-                        : "text-muted-foreground"
+                      ? "w-6 bg-primary"
+                      : "w-2 bg-muted-foreground/25"
                   )}
+                  aria-current={index === step ? "step" : undefined}
                 >
-                  {title}
+                  <span className="sr-only">
+                    {title}
+                    {index === step ? " (step corrente)" : ""}
+                  </span>
                 </span>
-                <span className="truncate text-sm text-muted-foreground">
-                  {subtitle}
-                </span>
-              </span>
-              {index < STEPS.length - 1 && (
-                <ChevronRight
-                  aria-hidden
-                  className={cn(
-                    "ml-auto size-5 shrink-0",
-                    index < step ? "text-primary" : "text-muted-foreground/60"
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        <section className="flex min-w-0 items-center px-6 py-8 sm:px-10 lg:px-12">
+          <div className="w-full">
+            {step === 0 && (
+              <div className="space-y-6">
+                <FormGrid>
+                  <SelectField
+                    control={form.control}
+                    name="sector"
+                    label="Settore"
+                    description="Seleziona l'ambito principale in cui opera l'azienda."
+                    options={SECTORS}
+                    required
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="companySize"
+                    label="Dimensione azienda"
+                    description="Indica il numero complessivo di persone nel team."
+                    options={SIZES}
+                    required
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="goal"
+                    label="Obiettivo principale"
+                    description="Scegli il primo processo che vuoi rendere più semplice."
+                    options={GOALS}
+                    required
+                  />
+                  <SelectField
+                    control={form.control}
+                    name="discoveryChannel"
+                    label="Come ci hai conosciuto?"
+                    description="Questa informazione è facoltativa."
+                    options={CHANNELS}
+                  />
+                </FormGrid>
+                <Controller
+                  control={form.control}
+                  name="termsAccepted"
+                  render={({ field, fieldState }) => (
+                    <LegalConsent
+                      id={field.name}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      required
+                      error={fieldState.error?.message}
+                    />
                   )}
                 />
-              )}
-            </li>
-          );
-        })}
-      </ol>
+              </div>
+            )}
 
-      <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
-        {step === 0 && (
-          <>
-            <FormGrid>
-              <SelectField
-                control={form.control}
-                name="sector"
-                label="Settore"
-                description="Seleziona l'ambito principale in cui opera l'azienda."
-                options={SECTORS}
-                required
-              />
-              <SelectField
-                control={form.control}
-                name="companySize"
-                label="Dimensione azienda"
-                description="Indica il numero complessivo di persone nel team."
-                options={SIZES}
-                required
-              />
-              <SelectField
-                control={form.control}
-                name="goal"
-                label="Obiettivo principale"
-                description="Scegli il primo processo che vuoi rendere più semplice."
-                options={GOALS}
-                required
-              />
-              <SelectField
-                control={form.control}
-                name="discoveryChannel"
-                label="Come ci hai conosciuto?"
-                description="Questa informazione è facoltativa."
-                options={CHANNELS}
-              />
-            </FormGrid>
-            <Controller
-              control={form.control}
-              name="termsAccepted"
-              render={({ field, fieldState }) => (
-                <LegalConsent
-                  id={field.name}
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+            {step === 1 && (
+              <FormGrid>
+                <TextField
+                  control={form.control}
+                  name="name"
+                  label="Ragione sociale"
+                  placeholder="Es. Rossi S.r.l."
                   required
-                  error={fieldState.error?.message}
                 />
-              )}
-            />
-          </>
-        )}
+                <TextField control={form.control} name="vatNumber" label="Partita IVA" />
+                <TextField control={form.control} name="fiscalCode" label="Codice fiscale" />
+                <TextField control={form.control} name="email" label="Email aziendale" type="email" />
+                <TextField control={form.control} name="phone" label="Telefono" />
+                <TextField control={form.control} name="pec" label="PEC" type="email" />
+                <TextField control={form.control} name="sdiCode" label="Codice SDI" />
+                <TextField control={form.control} name="address" label="Indirizzo" />
+                <TextField control={form.control} name="city" label="Città" />
+                <TextField control={form.control} name="zipCode" label="CAP" />
+                <TextField control={form.control} name="province" label="Provincia" />
+              </FormGrid>
+            )}
 
-        {step === 1 && (
-          <FormGrid>
-            <TextField
-              control={form.control}
-              name="name"
-              label="Ragione sociale"
-              placeholder="Es. Rossi S.r.l."
-              required
-            />
-            <TextField control={form.control} name="vatNumber" label="Partita IVA" />
-            <TextField control={form.control} name="fiscalCode" label="Codice fiscale" />
-            <TextField control={form.control} name="email" label="Email aziendale" type="email" />
-            <TextField control={form.control} name="phone" label="Telefono" />
-            <TextField control={form.control} name="pec" label="PEC" type="email" />
-            <TextField control={form.control} name="sdiCode" label="Codice SDI" />
-            <TextField control={form.control} name="address" label="Indirizzo" />
-            <TextField control={form.control} name="city" label="Città" />
-            <TextField control={form.control} name="zipCode" label="CAP" />
-            <TextField control={form.control} name="province" label="Provincia" />
-          </FormGrid>
-        )}
+            {step === 2 && (
+              <div className="mx-auto w-full max-w-2xl rounded-[2px] bg-white p-6 sm:p-8">
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold">Riepilogo del percorso di onboarding</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Controlla le informazioni inserite e conferma per salire a bordo di Gausio. Potrai sempre modificare i dati in seguito.
+                  </p>
+                </div>
 
-        {step === 2 && (
-          <DetailList
-            items={[
-              { label: "Ragione sociale", value: values.name || "—" },
-              { label: "Partita IVA", value: values.vatNumber || "—" },
-              { label: "Settore", value: labelOf(SECTORS, values.sector) },
-              {
-                label: "Dimensione",
-                value: labelOf(SIZES, values.companySize),
-              },
-              { label: "Obiettivo", value: labelOf(GOALS, values.goal) },
-              {
-                label: "Città",
-                value: values.city
-                  ? `${values.city}${values.province ? ` (${values.province})` : ""}`
-                  : "—",
-              },
-              { label: "Email", value: values.email || "—" },
-              { label: "PEC", value: values.pec || "—" },
-            ]}
-          />
-        )}
-
-        <FormError message={error} />
-
-        <div className="flex flex-col-reverse justify-between gap-3 border-t border-black/10 pt-6 sm:flex-row">
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            onClick={() => setStep((s) => Math.max(s - 1, 0))}
-            disabled={step === 0 || form.formState.isSubmitting}
-            className="sm:min-w-36"
-          >
-            <ArrowLeft aria-hidden className="size-[18px]" />
-            Indietro
-          </Button>
-          {step < STEPS.length - 1 ? (
-            <Button
-              key="continue"
-              type="button"
-              size="lg"
-              onClick={(event) => {
-                event.preventDefault();
-                void next();
-              }}
-              className="sm:min-w-36"
-            >
-              Continua
-              <ArrowRight aria-hidden className="size-[18px]" />
-            </Button>
-          ) : (
-            <Button
-              key="submit"
-              type="submit"
-              size="lg"
-              disabled={form.formState.isSubmitting}
-              className="sm:min-w-48"
-            >
-              {form.formState.isSubmitting && <Spinner className="size-4" />}
-              Crea workspace
-            </Button>
-          )}
-        </div>
+                <ol className="space-y-0">
+                  {[
+                    {
+                      title: "Questionario completato",
+                      meta: "Completato",
+                      description: `${labelOf(SECTORS, values.sector)} · ${labelOf(
+                        SIZES,
+                        values.companySize
+                      )} · ${labelOf(GOALS, values.goal)}`,
+                      state: "done",
+                    },
+                    {
+                      title: "Profilo aziendale",
+                      meta: values.name || "Da verificare",
+                      description: [
+                        values.vatNumber ? `P. IVA ${values.vatNumber}` : null,
+                        values.email || null,
+                        values.city
+                          ? `${values.city}${values.province ? ` (${values.province})` : ""}`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ") || "I dati principali sono pronti per essere salvati.",
+                      state: "done",
+                    },
+                    {
+                      title: "Canale di scoperta",
+                      meta: values.discoveryChannel ? "Indicazione ricevuta" : "Facoltativo",
+                      description:
+                        values.discoveryChannel
+                          ? labelOf(CHANNELS, values.discoveryChannel)
+                          : "Potrai aggiungere questa informazione in seguito.",
+                      state: values.discoveryChannel ? "done" : "idle",
+                    },
+                    {
+                      title: "Crea workspace",
+                      meta: "Pronto",
+                      description:
+                        "Conferma per creare lo spazio di lavoro e aprire la dashboard.",
+                      state: "current",
+                    },
+                  ].map((item, index, items) => (
+                    <li key={item.title} className="relative flex gap-5 pb-8 last:pb-0">
+                      {index < items.length - 1 && (
+                        <span
+                          aria-hidden
+                          className={cn(
+                            "absolute left-3 top-7 h-[calc(100%-1.25rem)] w-px",
+                            item.state === "idle"
+                              ? "border-l border-dashed border-border"
+                              : "bg-border"
+                          )}
+                        />
+                      )}
+                      <span
+                        className={cn(
+                          "relative z-10 mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border bg-white",
+                          item.state === "current"
+                            ? "border-primary text-primary"
+                            : item.state === "done"
+                              ? "border-foreground text-foreground"
+                              : "border-border text-muted-foreground"
+                        )}
+                      >
+                        {item.state === "done" ? (
+                          <Check aria-hidden className="size-3.5" />
+                        ) : (
+                          <span
+                            aria-hidden
+                            className={cn(
+                              "size-2 rounded-full",
+                              item.state === "current"
+                                ? "bg-primary"
+                                : "bg-muted-foreground/40"
+                            )}
+                          />
+                        )}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                          <h3 className="text-base font-bold">{item.title}</h3>
+                          <span className="text-sm text-muted-foreground">
+                            · {item.meta}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                          {item.description}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </div>
+        </section>
       </form>
     </AppCard>
   );
