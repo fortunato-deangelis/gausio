@@ -160,9 +160,9 @@ export function PasswordLoginForm({
         </p>
       </AuthLinkRow>
       <Button type="submit" size="lg" className="w-full" disabled={busy}>
-        {busy ? <Spinner className="size-[18px]" /> : null}
+        {busy ? <Spinner className="size-4.5" /> : null}
         Accedi
-        <ArrowRight aria-hidden className="size-[18px]" />
+        <ArrowRight aria-hidden className="size-4.5" />
       </Button>
     </form>
   );
